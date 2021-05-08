@@ -8,5 +8,5 @@ Position::Position(int x, int y, Piece piece)
 }
 Position::Position()
 {
-
+	this->x = this->y = 0;
 }

@@ -51,7 +51,7 @@ Piece::Piece(int type, bool isWhiteSide)
 		else
 			this->icon = 'P';
 	}
-	else
+	else // empty, no chess
 	{
 		this->icon = ' ';
 		this->type = -1;
@@ -111,7 +111,7 @@ Piece::Piece(string type, bool isWhiteSide)
 		else
 			this->icon = 'P';
 	}
-	else
+	else // empty, no chess
 	{
 		this->icon = ' ';
 		this->type = -1;
