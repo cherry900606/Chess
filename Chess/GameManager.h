@@ -13,4 +13,5 @@ public:
 	GameManager(); // initialsize
 	void game(); // game loop
 	void showMenu();
+	bool invalidMove(Position moveFromPos, Position moveToPos, int type);
 };
