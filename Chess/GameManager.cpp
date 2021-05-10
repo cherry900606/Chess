@@ -179,12 +179,17 @@ void GameManager::showMenu()
 }
 bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type, Board board)
 {
+    // 直接判斷了，如果起始點跟結束點棋色相同，一定不對！！
+    if (board.board[moveToPos.y][moveToPos.x].piece.type != -1&&
+        board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide == board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+        return true;
+
     if (type == 1) // king
     {
         if (board.board[moveToPos.y][moveToPos.x].piece.type != -1 &&
             board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide == board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide) // 終點有棋 & 與己同色
             return true;
-        if (abs(moveFromPos.x - moveToPos.x) + abs(moveFromPos.y - moveToPos.y) > 1)
+        if (abs(moveFromPos.x - moveToPos.x) + abs(moveFromPos.y - moveToPos.y) > 1) // 走不只一步
             return true;
         else
             return false;
@@ -196,6 +201,10 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.y - moveToPos.y);
             for (int i = 1; i <= count; i++)
             {
+                // 終點有棋 && 與己異色
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y - i][moveFromPos.x].piece.type != -1)
                     return true;
             }
@@ -205,6 +214,9 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.y - moveToPos.y);
             for (int i = 1; i <= count; i++)
             {
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y + i][moveFromPos.x].piece.type != -1)
                     return true;
             }
@@ -214,6 +226,9 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.y - moveToPos.y);
             for (int i = 1; i <= count; i++)
             {
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y][moveFromPos.x - i].piece.type != -1)
                     return true;
             }
@@ -223,16 +238,22 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.y - moveToPos.y);
             for (int i = 1; i <= count; i++)
             {
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y][moveFromPos.x + i].piece.type != -1)
                     return true;
             }
         }
-        else if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // 到右上
+        else if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // 右上
         {
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
-                if (board.board[moveFromPos.y + i][moveFromPos.x - i].piece.type != -1)
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
+                if (board.board[moveFromPos.y - i][moveFromPos.x + i].piece.type != -1)
                     return true;
             }
             return false;
@@ -242,6 +263,9 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y + i][moveFromPos.x + i].piece.type != -1)
                     return true;
             }
@@ -252,6 +276,9 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y - i][moveFromPos.x - i].piece.type != -1)
                     return true;
             }
@@ -262,6 +289,9 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y + i][moveFromPos.x - i].piece.type != -1)
                     return true;
             }
@@ -272,23 +302,6 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
     {
         if ((moveFromPos.x == moveToPos.x) && abs(moveFromPos.y - moveToPos.y) != 0) // 走直線
         {
-            //if (moveFromPos.y > moveToPos.y)
-            //{
-            //    moveFromPos.y--;
-            //    swap(moveFromPos.y, moveToPos.y);
-            //}
-            //else
-            //    moveFromPos.y++;
-
-            //for (int i = moveFromPos.y; i <= moveToPos.y; i++) // 路上有棋，就錯
-            //{
-            //    if (board.board[i][moveFromPos.x].piece.type != -1)
-            //    {
-            //            return true;
-
-            //    }
-            //}
-            //return false;
             if (moveFromPos.y > moveToPos.y) // 往上走
             {
                 for (int i = moveFromPos.y - 1; i >= moveToPos.y; i--) // 從自己上面那格走起
@@ -316,22 +329,6 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         }
         else if ((moveFromPos.y == moveToPos.y) && abs(moveFromPos.x - moveToPos.x) != 0) // 走橫線
         {
-            /*if (moveFromPos.x > moveToPos.x)
-            {
-                moveFromPos.x--;
-                swap(moveFromPos.x, moveToPos.x);
-            }
-            else
-                moveFromPos.x++;
-
-            for (int i = moveFromPos.x; i <= moveToPos.x; i++)
-            {
-                if (board.board[moveFromPos.y][i].piece.type != -1)
-                {
-                        return true;
-                }
-            }
-            return false;*/
             if (moveFromPos.x > moveToPos.x) // 往左走
             {
                 for (int i = moveFromPos.x - 1; i >= moveToPos.x; i--) // 從左邊一格走起
@@ -371,7 +368,10 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
-                if (board.board[moveFromPos.y + i][moveFromPos.x - i].piece.type != -1)
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
+                if (board.board[moveFromPos.y - i][moveFromPos.x + i].piece.type != -1)
                     return true;
             }
             return false;
@@ -381,6 +381,9 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y + i][moveFromPos.x + i].piece.type != -1)
                     return true;
             }
@@ -391,6 +394,9 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y - i][moveFromPos.x - i].piece.type != -1)
                     return true;
             }
@@ -401,6 +407,9 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
+                if (i == count &&
+                    board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
+                    return false;
                 if (board.board[moveFromPos.y + i][moveFromPos.x - i].piece.type != -1)
                     return true;
             }
@@ -410,24 +419,29 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
     }
     else if (type == 5) // knight
     {
-        if (moveFromPos.y - 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // 上左 上右
+        if (moveFromPos.y - 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // 上兩步 左右
             return false;
-        if (moveFromPos.y + 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // 下左 下右
+        if (moveFromPos.y + 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // 下兩步 左右
             return false;
-        if (moveFromPos.x - 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // 左上 左下
+        if (moveFromPos.x - 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // 左兩步 上下
             return false;
-        if (moveFromPos.x + 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // 右上 右下
+        if (moveFromPos.x + 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // 右兩步 上下
             return false;
         return true;
     }
     else if (type == 6) // pawn
     {
-        // 還有吃子斜吃的狀況沒寫
         if (moveFromPos.piece.isWhiteSide) //白子只能往上走
         {
+            // 斜前方一格吃子
+            if (abs(moveFromPos.x - moveToPos.x) == 1 && moveFromPos.y - 1 == moveToPos.y)
+                return false;
+            // 一般移動
             if (moveFromPos.piece.isFirstMove) // first step can move one or two
             {
-                if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y - 1 == moveToPos.y || moveFromPos.y - 2 == moveToPos.y))
+                // 往上走 && 終點空格(不黑不白)
+                if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y - 1 == moveToPos.y || moveFromPos.y - 2 == moveToPos.y) &&
+                    board.board[moveToPos.y][moveToPos.x].piece.type == -1)
                     return false;
                 return true;
             }
@@ -437,9 +451,12 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         }
         else // 黑子只能往下走
         {
+            if (abs(moveFromPos.x - moveToPos.x) == 1 && moveFromPos.y + 1 == moveToPos.y)
+                return false;
             if (moveFromPos.piece.isFirstMove)
             {
-                if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y + 1 == moveToPos.y || moveFromPos.y + 2 == moveToPos.y))
+                if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y + 1 == moveToPos.y || moveFromPos.y + 2 == moveToPos.y) &&
+                    board.board[moveToPos.y][moveToPos.x].piece.type == -1)
                     return false;
                 return true;
             }
