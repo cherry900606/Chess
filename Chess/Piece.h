@@ -12,4 +12,5 @@ public:
 	bool isAlive;
 	bool isWhiteSide;
 	char icon;
+	bool isFirstMove;
 };

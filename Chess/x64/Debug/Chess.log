@@ -1,4 +1,17 @@
-﻿  GameManager.cpp
+﻿  Board.cpp
+  GameManager.cpp
 C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(7,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
 C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(16,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
+  Piece.cpp
+  Player.cpp
+C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(7,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
+C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(16,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
+C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.cpp(18,44): warning C4227: 過時的用法: 已忽略參考上的限定詞
+  Position.cpp
+  Viewer.cpp
+  main.cpp
+C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(7,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
+C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(16,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
+  正在產生程式碼...
+  LINK : 最後的累加連結找不到或未建置 C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\x64\Debug\Chess.exe，正在執行完整連結
   Chess.vcxproj -> C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\x64\Debug\Chess.exe

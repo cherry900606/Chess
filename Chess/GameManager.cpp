@@ -3,19 +3,19 @@
 
 GameManager::GameManager()
 {
-	// 先假定都是人類玩家
-	this->current_player = 0; // 先假定player1先手
-	this->players[0] = new HumanPlayer(true);
-	this->players[1] = new HumanPlayer(false);
+    // 先假定都是人類玩家
+    this->current_player = 0; // 先假定player1先手
+    this->players[0] = new HumanPlayer(true);
+    this->players[1] = new HumanPlayer(false);
 }
 void GameManager::game()
 {
-	Board chessBoard;
-	Viewer viewer;
+    Board chessBoard;
+    Viewer viewer;
     string command, type;
 
     showMenu();
-	
+
     bool endGame = false;
     while (1)
     {
@@ -33,6 +33,7 @@ void GameManager::game()
             {
                 Position moveToPos, moveFromPos;
                 ss >> moveFromPos.x >> moveFromPos.y >> moveToPos.x >> moveToPos.y;
+                moveFromPos.piece = chessBoard.board[moveFromPos.y][moveFromPos.x].piece;
 
                 if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // 從空的格子移動
                 {
@@ -44,9 +45,10 @@ void GameManager::game()
                     cout << "請選擇正確的棋子!" << endl;
                     system("pause");
                 }
-                else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveToPos.x].piece.type)) // 移動模式不符合棋種
+                else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // 移動模式不符合棋種
                 {
-
+                    cout << "錯誤的移動方式！" << endl;
+                    system("pause");
                 }
                 else // 正常情況
                 {
@@ -62,6 +64,7 @@ void GameManager::game()
             }
             system("cls"); // 清空畫面
         } while (!validInput); // 正確輸入，才離開迴圈
+
 
 
         if (endGame) break; // 判斷要不要離開遊戲
@@ -82,6 +85,7 @@ void GameManager::game()
             {
                 Position moveToPos, moveFromPos;
                 ss >> moveFromPos.x >> moveFromPos.y >> moveToPos.x >> moveToPos.y;
+                moveFromPos.piece = chessBoard.board[moveFromPos.y][moveFromPos.x].piece;
 
                 if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // 從空的格子移動
                 {
@@ -91,6 +95,11 @@ void GameManager::game()
                 else if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != players[current_player]->isWhiteSide)
                 {
                     cout << "請選擇正確的棋子!" << endl;
+                    system("pause");
+                }
+                else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // 移動模式不符合棋種
+                {
+                    cout << "錯誤的移動方式！" << endl;
                     system("pause");
                 }
                 else
@@ -117,14 +126,14 @@ void GameManager::game()
         current_player = (current_player == 0) ? 1 : 0;
 
     }
-	// loop:
-	// 先手下旗
-	// 判斷
-	// 後手下旗
-	// 判斷
+    // loop:
+    // 先手下旗
+    // 判斷
+    // 後手下旗
+    // 判斷
 
-	// 遊戲結束
-	// 要不要再來一局?
+    // 遊戲結束
+    // 要不要再來一局?
 }
 void GameManager::showMenu()
 {
@@ -160,39 +169,284 @@ void GameManager::showMenu()
     cout << "********************************************************************************\n";
     system("pause");
     system("cls");
-	// show menu
-	//  -美化或發揮創意的介面
-	//  -可以放個分組名單?
-	// 依據使用者輸入，選擇:
-	// l) play new game
-	// 2) load game
-	// 3) 我不知道
+    // show menu
+    //  -美化或發揮創意的介面
+    //  -可以放個分組名單?
+    // 依據使用者輸入，選擇:
+    // l) play new game
+    // 2) load game
+    // 3) 我不知道
 }
-bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type)
+bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type, Board board)
 {
     if (type == 1) // king
     {
-
+        if (board.board[moveToPos.y][moveToPos.x].piece.type != -1 &&
+            board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide == board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide) // 終點有棋 & 與己同色
+            return true;
+        if (abs(moveFromPos.x - moveToPos.x) + abs(moveFromPos.y - moveToPos.y) > 1)
+            return true;
+        else
+            return false;
     }
     else if (type == 2) // queen
     {
-
+        if (moveFromPos.x == moveToPos.x && moveFromPos.y > moveToPos.y) // 上
+        {
+            int count = abs(moveFromPos.y - moveToPos.y);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y - i][moveFromPos.x].piece.type != -1)
+                    return true;
+            }
+        }
+        else if (moveFromPos.x == moveToPos.x && moveFromPos.y < moveToPos.y) // 下
+        {
+            int count = abs(moveFromPos.y - moveToPos.y);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y + i][moveFromPos.x].piece.type != -1)
+                    return true;
+            }
+        }
+        else if (moveFromPos.y == moveToPos.y && moveFromPos.x > moveToPos.x) // 左
+        {
+            int count = abs(moveFromPos.y - moveToPos.y);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y][moveFromPos.x - i].piece.type != -1)
+                    return true;
+            }
+        }
+        else if (moveFromPos.y == moveToPos.y && moveFromPos.x < moveToPos.x) // 右
+        {
+            int count = abs(moveFromPos.y - moveToPos.y);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y][moveFromPos.x + i].piece.type != -1)
+                    return true;
+            }
+        }
+        else if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // 到右上
+        {
+            int count = abs(moveFromPos.x - moveToPos.x);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y + i][moveFromPos.x - i].piece.type != -1)
+                    return true;
+            }
+            return false;
+        }
+        else if (moveFromPos.x < moveToPos.x && moveFromPos.y < moveToPos.y) // 右下
+        {
+            int count = abs(moveFromPos.x - moveToPos.x);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y + i][moveFromPos.x + i].piece.type != -1)
+                    return true;
+            }
+            return false;
+        }
+        else if (moveFromPos.x > moveToPos.x && moveFromPos.y > moveToPos.y) // 左上
+        {
+            int count = abs(moveFromPos.x - moveToPos.x);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y - i][moveFromPos.x - i].piece.type != -1)
+                    return true;
+            }
+            return false;
+        }
+        else if (moveFromPos.x > moveToPos.x && moveFromPos.y < moveToPos.y) // 左下
+        {
+            int count = abs(moveFromPos.x - moveToPos.x);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y + i][moveFromPos.x - i].piece.type != -1)
+                    return true;
+            }
+            return false;
+        }
     }
     else if (type == 3) // rook
     {
+        if ((moveFromPos.x == moveToPos.x) && abs(moveFromPos.y - moveToPos.y) != 0) // 走直線
+        {
+            //if (moveFromPos.y > moveToPos.y)
+            //{
+            //    moveFromPos.y--;
+            //    swap(moveFromPos.y, moveToPos.y);
+            //}
+            //else
+            //    moveFromPos.y++;
 
+            //for (int i = moveFromPos.y; i <= moveToPos.y; i++) // 路上有棋，就錯
+            //{
+            //    if (board.board[i][moveFromPos.x].piece.type != -1)
+            //    {
+            //            return true;
+
+            //    }
+            //}
+            //return false;
+            if (moveFromPos.y > moveToPos.y) // 往上走
+            {
+                for (int i = moveFromPos.y - 1; i >= moveToPos.y; i--) // 從自己上面那格走起
+                {
+                    // 最後一步 && 是敵方棋
+                    if (i == moveToPos.y && board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide)
+                        return false;
+                    if (board.board[i][moveFromPos.x].piece.type != -1)
+                        return true;
+                }
+                return false;
+            }
+            else // 往下走
+            {
+                for (int i = moveFromPos.y + 1; i <= moveToPos.y; i++) // 從自己下面那格走起
+                {
+                    // 最後一步 && 是敵方棋
+                    if (i == moveToPos.y && board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide)
+                        return false;
+                    if (board.board[i][moveFromPos.x].piece.type != -1)
+                        return true;
+                }
+                return false;
+            }
+        }
+        else if ((moveFromPos.y == moveToPos.y) && abs(moveFromPos.x - moveToPos.x) != 0) // 走橫線
+        {
+            /*if (moveFromPos.x > moveToPos.x)
+            {
+                moveFromPos.x--;
+                swap(moveFromPos.x, moveToPos.x);
+            }
+            else
+                moveFromPos.x++;
+
+            for (int i = moveFromPos.x; i <= moveToPos.x; i++)
+            {
+                if (board.board[moveFromPos.y][i].piece.type != -1)
+                {
+                        return true;
+                }
+            }
+            return false;*/
+            if (moveFromPos.x > moveToPos.x) // 往左走
+            {
+                for (int i = moveFromPos.x - 1; i >= moveToPos.x; i--) // 從左邊一格走起
+                {
+                    // 最終格 && 敵方棋
+                    if (i == moveToPos.x && board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide)
+                        return false;
+                    // 不是空格
+                    if (board.board[moveFromPos.y][i].piece.type != -1)
+                        return true;
+                }
+                return false;
+            }
+            else // 往右走
+            {
+                for (int i = moveFromPos.x + 1; i <= moveToPos.x; i++) // 從右邊一格走起
+                {
+                    // 最終格 && 敵方棋
+                    if (i == moveToPos.x && board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide)
+                        return false;
+                    // 不是空格
+                    if (board.board[moveFromPos.y][i].piece.type != -1)
+                        return true;
+                }
+                return false;
+            }
+        }
+        return true;
     }
     else if (type == 4) // bishop
     {
+        if (moveFromPos.x == moveToPos.x || moveFromPos.y == moveToPos.y)
+            return true;
+
+        if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // 到右上
+        {
+            int count = abs(moveFromPos.x - moveToPos.x);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y + i][moveFromPos.x - i].piece.type != -1)
+                    return true;
+            }
+            return false;
+        }
+        else if (moveFromPos.x < moveToPos.x && moveFromPos.y < moveToPos.y) // 右下
+        {
+            int count = abs(moveFromPos.x - moveToPos.x);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y + i][moveFromPos.x + i].piece.type != -1)
+                    return true;
+            }
+            return false;
+        }
+        else if (moveFromPos.x > moveToPos.x && moveFromPos.y > moveToPos.y) // 左上
+        {
+            int count = abs(moveFromPos.x - moveToPos.x);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y - i][moveFromPos.x - i].piece.type != -1)
+                    return true;
+            }
+            return false;
+        }
+        else if (moveFromPos.x > moveToPos.x && moveFromPos.y < moveToPos.y) // 左下
+        {
+            int count = abs(moveFromPos.x - moveToPos.x);
+            for (int i = 1; i <= count; i++)
+            {
+                if (board.board[moveFromPos.y + i][moveFromPos.x - i].piece.type != -1)
+                    return true;
+            }
+            return false;
+        }
 
     }
     else if (type == 5) // knight
     {
-
+        if (moveFromPos.y - 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // 上左 上右
+            return false;
+        if (moveFromPos.y + 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // 下左 下右
+            return false;
+        if (moveFromPos.x - 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // 左上 左下
+            return false;
+        if (moveFromPos.x + 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // 右上 右下
+            return false;
+        return true;
     }
     else if (type == 6) // pawn
     {
-
+        // 還有吃子斜吃的狀況沒寫
+        if (moveFromPos.piece.isWhiteSide) //白子只能往上走
+        {
+            if (moveFromPos.piece.isFirstMove) // first step can move one or two
+            {
+                if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y - 1 == moveToPos.y || moveFromPos.y - 2 == moveToPos.y))
+                    return false;
+                return true;
+            }
+            if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y - 1 == moveToPos.y)) // other steps can only move one
+                return false;
+            return true;
+        }
+        else // 黑子只能往下走
+        {
+            if (moveFromPos.piece.isFirstMove)
+            {
+                if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y + 1 == moveToPos.y || moveFromPos.y + 2 == moveToPos.y))
+                    return false;
+                return true;
+            }
+            if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y + 1 == moveToPos.y))
+                return false;
+            return true;
+        }
     }
     return false;
 }

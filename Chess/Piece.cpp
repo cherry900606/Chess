@@ -1,14 +1,16 @@
 #include "Piece.h"
 Piece::Piece()
 {
-
+	this->isAlive = true;
+	this->isFirstMove = true;
 }
 Piece::Piece(int type, bool isWhiteSide)
 {
 	this->type = type;
 	this->isWhiteSide = isWhiteSide;
 	this->isAlive = true;
-	
+	this->isFirstMove = true;
+
 	if (type == 1) // king
 	{
 		if (isWhiteSide)
@@ -62,6 +64,7 @@ Piece::Piece(string type, bool isWhiteSide)
 {
 	this->isWhiteSide = isWhiteSide;
 	this->isAlive = true;
+	this->isFirstMove = true;
 
 	if (type == "King") // king
 	{
@@ -99,9 +102,9 @@ Piece::Piece(string type, bool isWhiteSide)
 	{
 		this->type = 5;
 		if (isWhiteSide)
-			this->icon = 'k';
+			this->icon = 'n';
 		else
-			this->icon = 'K';
+			this->icon = 'N';
 	}
 	else if (type == "Pawn") // pawn
 	{

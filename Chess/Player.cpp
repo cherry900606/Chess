@@ -17,6 +17,7 @@ HumanPlayer::HumanPlayer(bool isWhiteSide)
 }
 void HumanPlayer::OnMove(Board& const board, Position& outFromPos, Position& outToPos)
 {
+	board.board[outFromPos.y][outFromPos.x].piece.isFirstMove = false; // 不再是第一步了
 	board.board[outToPos.y][outToPos.x].piece = board.board[outFromPos.y][outFromPos.x].piece; // 移過去
 	board.board[outFromPos.y][outFromPos.x].piece = Piece(-1, true); // 淨空原本的
 }
