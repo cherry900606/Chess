@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include <sstream>
+#include <fstream>
 
 GameManager::GameManager()
 {
@@ -14,7 +15,6 @@ void GameManager::game()
     Viewer viewer;
     string command, type;
 
-    showMenu();
 
     bool endGame = false;
     while (1)
@@ -62,6 +62,33 @@ void GameManager::game()
                 endGame = true;
                 break;
             }
+			else if (type == "save" || type == "Save")
+			{
+				string fileName;
+				cout << "save as file name: ";
+				cin >> fileName;
+
+				// 把檔名記錄起來
+				ofstream file(fileName);
+				this->saveFile.push_back(fileName);
+				if (!file)
+					cout << "存檔失敗" << endl;
+				else
+					cout << "存檔成功" << endl;
+				system("pause");
+
+				// 開始存檔
+				file << this->current_player << endl; // 下次由誰開始
+				for (int i = 0; i < 8; i++)
+				{
+					for (int j = 0; j < 8; j++)
+					{
+						if (chessBoard.board[i][j].piece.type != -1) // x y color type
+							file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type << endl;
+					}
+				}
+				cin.ignore();
+			}
             system("cls"); // 清空畫面
         } while (!validInput); // 正確輸入，才離開迴圈
 
@@ -114,10 +141,33 @@ void GameManager::game()
                 endGame = true;
                 break;
             }
-            else
-            {
+			else if (type == "save" || type == "Save")
+			{
+				string fileName;
+				cout << "save as file name: ";
+				cin >> fileName;
 
-            }
+				// 把檔名記錄起來
+				ofstream file(fileName);
+				this->saveFile.push_back(fileName);
+				if (!file)
+					cout << "存檔失敗" << endl;
+				else
+					cout << "存檔成功" << endl;
+				system("pause");
+
+				// 開始存檔
+				file << this->current_player << endl; // 下次由誰開始
+				for (int i = 0; i < 8; i++)
+				{
+					for (int j = 0; j < 8; j++)
+					{
+						if (chessBoard.board[i][j].piece.type != -1) // x y color type
+							file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type << endl;
+					}
+				}
+				cin.ignore();
+			}
             system("cls");
         } while (!validInput);
 
@@ -138,37 +188,37 @@ void GameManager::game()
 void GameManager::showMenu()
 {
     // 隨便從網路上抓的示意圖，之後可以改掉
-    cout << "********************************************************************************\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*        ******     **                                                         *\n";
-    cout << "*      **********   **                                                         *\n";
-    cout << "*    ***            **                                                         *\n";
-    cout << "*   ***             **            ****       ****        ****                  *\n";
-    cout << "*   ***             **          ********   ***  ***    ***  ***                *\n";
-    cout << "*   ***             ** ****    ***    *** ***         ***                      *\n";
-    cout << "*   ***             ****  **   **********   ******      ******                 *\n";
-    cout << "*    ***            ***    **  ***             *****       *****               *\n";
-    cout << "*      **********   **     **   ****       ***   **    ***   **                *\n";
-    cout << "*       *******     **     **     ****       *****       *****                 *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                        ' welcome to chess game '                             *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                         press enter to continue.                             *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                              *\n";
-    cout << "*                                                                          v1.0*\n";
-    cout << "********************************************************************************\n";
-    system("pause");
-    system("cls");
+		cout << "********************************************************************************\n";
+		cout << "*                                                                              *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                                                                              *\n";
+		cout << "*        ******     **                                                         *\n";
+		cout << "*      **********   **                                                         *\n";
+		cout << "*    ***            **                                                         *\n";
+		cout << "*   ***             **            ****       ****        ****                  *\n";
+		cout << "*   ***             **          ********   ***  ***    ***  ***                *\n";
+		cout << "*   ***             ** ****    ***    *** ***         ***                      *\n";
+		cout << "*   ***             ****  **   **********   ******      ******                 *\n";
+		cout << "*    ***            ***    **  ***             *****       *****               *\n";
+		cout << "*      **********   **     **   ****       ***   **    ***   **                *\n";
+		cout << "*       *******     **     **     ****       *****       *****                 *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                        ' welcome to chess game '                             *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                         1) start new game                                    *\n";
+		cout << "*                         2) exit                                              *\n";
+		cout << "*                         3) load game                                         *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                                                                              *\n";
+		cout << "*                                                                          v1.0*\n";
+		cout << "********************************************************************************\n";
+	
+    
     // show menu
     //  -美化或發揮創意的介面
     //  -可以放個分組名單?

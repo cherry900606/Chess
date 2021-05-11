@@ -2,6 +2,7 @@
 #include "Board.h"
 #include "Player.h"
 #include "Viewer.h"
+#include <vector>
 
 class GameManager {
 public:
@@ -9,6 +10,7 @@ public:
 	int current_player; // 現在可以移動旗子的玩家
 	Board board; // now board status
 	Viewer viewer; // show the board
+	vector<string> saveFile;
 
 	GameManager(); // initialsize
 	void game(); // game loop
