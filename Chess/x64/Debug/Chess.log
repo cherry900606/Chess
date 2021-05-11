@@ -1,4 +1,9 @@
 ﻿  GameManager.cpp
-C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(7,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
-C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(16,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
-  Chess.vcxproj -> C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\x64\Debug\Chess.exe
+C:\Users\s9403\OneDrive\桌面\OOP\實習課作業\chess\Chess\Chess\Player.h(7,40): warning C4227: anachronism used: qualifiers on reference are ignored
+C:\Users\s9403\OneDrive\桌面\OOP\實習課作業\chess\Chess\Chess\Player.h(16,40): warning C4227: anachronism used: qualifiers on reference are ignored
+  main.cpp
+C:\Users\s9403\OneDrive\桌面\OOP\實習課作業\chess\Chess\Chess\Player.h(7,40): warning C4227: anachronism used: qualifiers on reference are ignored
+C:\Users\s9403\OneDrive\桌面\OOP\實習課作業\chess\Chess\Chess\Player.h(16,40): warning C4227: anachronism used: qualifiers on reference are ignored
+  Promotion.cpp
+  Generating Code...
+  Chess.vcxproj -> C:\Users\s9403\OneDrive\桌面\OOP\實習課作業\chess\Chess\x64\Debug\Chess.exe
