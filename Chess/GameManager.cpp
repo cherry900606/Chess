@@ -1,6 +1,5 @@
 #include "GameManager.h"
 #include <sstream>
-#include <fstream>
 
 GameManager::GameManager()
 {
@@ -9,9 +8,9 @@ GameManager::GameManager()
     this->players[0] = new HumanPlayer(true);
     this->players[1] = new HumanPlayer(false);
 }
-void GameManager::game()
+void GameManager::game(Board chessBoard=Board())
 {
-    Board chessBoard;
+    //Board chessBoard;
     Viewer viewer;
     string command, type;
 
@@ -83,8 +82,9 @@ void GameManager::game()
 				{
 					for (int j = 0; j < 8; j++)
 					{
-						if (chessBoard.board[i][j].piece.type != -1) // x y color type
-							file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type << endl;
+						if (chessBoard.board[i][j].piece.type != -1) // x y color type icon
+							file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type <<
+							chessBoard.board[i][j].piece.icon << endl;
 					}
 				}
 				cin.ignore();

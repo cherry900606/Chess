@@ -1,4 +1,4 @@
-﻿  GameManager.cpp
+﻿  main.cpp
 C:\Users\USER\Desktop\Chess\Chess\Player.h(7,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
 C:\Users\USER\Desktop\Chess\Chess\Player.h(16,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
   Chess.vcxproj -> C:\Users\USER\Desktop\Chess\x64\Debug\Chess.exe

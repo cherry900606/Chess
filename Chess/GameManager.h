@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "Viewer.h"
 #include <vector>
+#include <fstream>
+
 
 class GameManager {
 public:
@@ -13,7 +15,7 @@ public:
 	vector<string> saveFile;
 
 	GameManager(); // initialsize
-	void game(); // game loop
+	void game(Board board); // game loop
 	void showMenu();
 	bool invalidMove(Position moveFromPos, Position moveToPos, int type, Board board);
 };

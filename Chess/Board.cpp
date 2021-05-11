@@ -47,3 +47,14 @@ Board::Board()
 	board[7][6].piece = Piece("Knight", true);
 	board[7][7].piece = Piece("Rook", true);
 }
+void Board::emptyBoard()
+{
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			board[i][j].x = i; board[i][j].y = j;
+			board[i][j].piece = Piece(-1, false);
+		}
+	}
+}
