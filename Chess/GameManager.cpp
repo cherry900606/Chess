@@ -53,6 +53,8 @@ void GameManager::game()
                 else // 正常情況
                 {
                     players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // 移動
+                    //移動後 是不是 Promotion
+                    isPromotion(1);
                     system("pause");
                     validInput = true;
                 }
