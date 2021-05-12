@@ -18,164 +18,179 @@ void GameManager::game(Board chessBoard=Board())
     bool endGame = false;
     while (1)
     {
-        // white turn
         bool validInput = false;
-        do
+
+        // white turn
+        if (players[current_player]->isWhiteSide)
         {
-            cout << "Now is WHITE turn!\n" << endl;
-            viewer.showBoard(chessBoard);
-            getline(cin, command);
-
-            stringstream ss(command); // 切割字串用
-            ss >> type;
-            if (type == "move" || type == "Move") // 移動 (ex: move 0 0 0 2)
+            do
             {
-                Position moveToPos, moveFromPos;
-                ss >> moveFromPos.x >> moveFromPos.y >> moveToPos.x >> moveToPos.y;
-                moveFromPos.piece = chessBoard.board[moveFromPos.y][moveFromPos.x].piece;
+                cout << "Now is WHITE turn!\n" << endl;
+                viewer.showBoard(chessBoard);
+                getline(cin, command);
 
-                if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // 從空的格子移動
+                stringstream ss(command); // 切割字串用
+                ss >> type;
+                if (type == "move" || type == "Move") // 移動 (ex: move 0 0 0 2)
                 {
-                    cout << "請選擇正確的位置！" << endl;
-                    system("pause");
+                    Position moveToPos, moveFromPos;
+                    ss >> moveFromPos.x >> moveFromPos.y >> moveToPos.x >> moveToPos.y;
+                    moveFromPos.piece = chessBoard.board[moveFromPos.y][moveFromPos.x].piece;
+
+                    if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // 從空的格子移動
+                    {
+                        cout << "請選擇正確的位置！" << endl;
+                        system("pause");
+                    }
+                    else if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != players[current_player]->isWhiteSide) // 移動不屬於自己的棋子
+                    {
+                        cout << "請選擇正確的棋子!" << endl;
+                        system("pause");
+                    }
+                    else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // 移動模式不符合棋種
+                    {
+                        cout << "錯誤的移動方式！" << endl;
+                        system("pause");
+                    }
+                    else // 正常情況
+                    {
+                        players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // 移動
+                        validInput = true;
+                        if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide))
+                        {
+                            cout << "將死!!" << endl;
+                            endGame = true;
+                            system("pause");
+                        }
+                    }
                 }
-                else if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != players[current_player]->isWhiteSide) // 移動不屬於自己的棋子
+                else if (type == "exit" || type == "Exit") // 投降
                 {
-                    cout << "請選擇正確的棋子!" << endl;
-                    system("pause");
+                    endGame = true;
+                    break;
                 }
-                else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // 移動模式不符合棋種
+                else if (type == "save" || type == "Save")
                 {
-                    cout << "錯誤的移動方式！" << endl;
+                    string fileName;
+                    cout << "save as file name: ";
+                    cin >> fileName;
+
+                    // 把檔名記錄起來
+                    ofstream file(fileName);
+                    this->saveFile.push_back(fileName);
+                    if (!file)
+                        cout << "存檔失敗" << endl;
+                    else
+                        cout << "存檔成功" << endl;
                     system("pause");
+
+                    // 開始存檔
+                    file << this->current_player << endl; // 下次由誰開始
+                    for (int i = 0; i < 8; i++)
+                    {
+                        for (int j = 0; j < 8; j++)
+                        {
+                            if (chessBoard.board[i][j].piece.type != -1) // x y color type icon
+                                file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type <<
+                                chessBoard.board[i][j].piece.icon << endl;
+                        }
+                    }
+                    cin.ignore();
                 }
-                else // 正常情況
-                {
-                    players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // 移動
-                    system("pause");
-                    validInput = true;
-                }
-            }
-            else if (type == "exit" || type == "Exit") // 投降
-            {
-                endGame = true;
-                break;
-            }
-			else if (type == "save" || type == "Save")
-			{
-				string fileName;
-				cout << "save as file name: ";
-				cin >> fileName;
+                system("cls"); // 清空畫面
+            } while (!validInput); // 正確輸入，才離開迴圈
 
-				// 把檔名記錄起來
-				ofstream file(fileName);
-				this->saveFile.push_back(fileName);
-				if (!file)
-					cout << "存檔失敗" << endl;
-				else
-					cout << "存檔成功" << endl;
-				system("pause");
-
-				// 開始存檔
-				file << this->current_player << endl; // 下次由誰開始
-				for (int i = 0; i < 8; i++)
-				{
-					for (int j = 0; j < 8; j++)
-					{
-						if (chessBoard.board[i][j].piece.type != -1) // x y color type icon
-							file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type <<
-							chessBoard.board[i][j].piece.icon << endl;
-					}
-				}
-				cin.ignore();
-			}
-            system("cls"); // 清空畫面
-        } while (!validInput); // 正確輸入，才離開迴圈
-
-
-
-        if (endGame) break; // 判斷要不要離開遊戲
-        current_player = (current_player == 0) ? 1 : 0; // 切換玩家
+            if (endGame) break; // 判斷要不要離開遊戲
+            current_player = (current_player == 0) ? 1 : 0; // 切換玩家
+        }
+        
+        validInput = false;
 
         // black turn
-        validInput = false;
-        do
+        if (!players[current_player]->isWhiteSide)
         {
-            cout << "Now is BLACK turn!\n" << endl;
-            viewer.showBoard(chessBoard);
-            getline(cin, command);
-
-            stringstream ss;
-            ss << command;
-            ss >> type;
-            if (type == "move" || type == "Move") // 移動
+            do
             {
-                Position moveToPos, moveFromPos;
-                ss >> moveFromPos.x >> moveFromPos.y >> moveToPos.x >> moveToPos.y;
-                moveFromPos.piece = chessBoard.board[moveFromPos.y][moveFromPos.x].piece;
+                cout << "Now is BLACK turn!\n" << endl;
+                viewer.showBoard(chessBoard);
+                getline(cin, command);
 
-                if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // 從空的格子移動
+                stringstream ss;
+                ss << command;
+                ss >> type;
+                if (type == "move" || type == "Move") // 移動
                 {
-                    cout << "請選擇正確的位置！" << endl;
+                    Position moveToPos, moveFromPos;
+                    ss >> moveFromPos.x >> moveFromPos.y >> moveToPos.x >> moveToPos.y;
+                    moveFromPos.piece = chessBoard.board[moveFromPos.y][moveFromPos.x].piece;
+
+                    if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // 從空的格子移動
+                    {
+                        cout << "請選擇正確的位置！" << endl;
+                        system("pause");
+                    }
+                    else if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != players[current_player]->isWhiteSide)
+                    {
+                        cout << "請選擇正確的棋子!" << endl;
+                        system("pause");
+                    }
+                    else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // 移動模式不符合棋種
+                    {
+                        cout << "錯誤的移動方式！" << endl;
+                        system("pause");
+                    }
+                    else
+                    {
+                        players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos);
+                        validInput = true;
+                        if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide))
+                        {
+                            cout << "將死!!" << endl;
+                            system("pause");
+                            endGame = true;
+                        }
+                    }
+
+                }
+                else if (type == "exit" || type == "Exit") // 投降
+                {
+                    endGame = true;
+                    break;
+                }
+                else if (type == "save" || type == "Save")
+                {
+                    string fileName;
+                    cout << "save as file name: ";
+                    cin >> fileName;
+
+                    // 把檔名記錄起來
+                    ofstream file(fileName);
+                    this->saveFile.push_back(fileName);
+                    if (!file)
+                        cout << "存檔失敗" << endl;
+                    else
+                        cout << "存檔成功" << endl;
                     system("pause");
+
+                    // 開始存檔
+                    file << this->current_player << endl; // 下次由誰開始
+                    for (int i = 0; i < 8; i++)
+                    {
+                        for (int j = 0; j < 8; j++)
+                        {
+                            if (chessBoard.board[i][j].piece.type != -1) // x y color type icon
+                                file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type <<
+                                chessBoard.board[i][j].piece.icon << endl;
+                        }
+                    }
+                    cin.ignore();
                 }
-                else if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != players[current_player]->isWhiteSide)
-                {
-                    cout << "請選擇正確的棋子!" << endl;
-                    system("pause");
-                }
-                else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // 移動模式不符合棋種
-                {
-                    cout << "錯誤的移動方式！" << endl;
-                    system("pause");
-                }
-                else
-                {
-                    players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos);
-                    validInput = true;
-                }
+                system("cls");
+            } while (!validInput);
 
-            }
-            else if (type == "exit" || type == "Exit") // 投降
-            {
-                endGame = true;
-                break;
-            }
-			else if (type == "save" || type == "Save")
-			{
-				string fileName;
-				cout << "save as file name: ";
-				cin >> fileName;
-
-				// 把檔名記錄起來
-				ofstream file(fileName);
-				this->saveFile.push_back(fileName);
-				if (!file)
-					cout << "存檔失敗" << endl;
-				else
-					cout << "存檔成功" << endl;
-				system("pause");
-
-				// 開始存檔
-				file << this->current_player << endl; // 下次由誰開始
-				for (int i = 0; i < 8; i++)
-				{
-					for (int j = 0; j < 8; j++)
-					{
-                        if (chessBoard.board[i][j].piece.type != -1) // x y color type icon
-                            file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type <<
-                            chessBoard.board[i][j].piece.icon << endl;
-					}
-				}
-				cin.ignore();
-			}
-            system("cls");
-        } while (!validInput);
-
-
-        if (endGame) break;
-        current_player = (current_player == 0) ? 1 : 0;
-
+            if (endGame) break;
+            current_player = (current_player == 0) ? 1 : 0;
+        }
     }
     // loop:
     // 先手下旗
@@ -517,4 +532,81 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         }
     }
     return false;
+}
+
+//將死的判斷方法:
+//國王可以走的即為包括自身在內的九宮格
+//因此，只需將敵方棋子全部判斷過一次，
+//若該棋子可以移動到九宮格之一，即做標記
+//最後看九宮格是否都被標記，或有己方棋而無法一動
+//如以一來，當達成「下一步會被敵方吃掉」且「無法逃跑」
+//則將死。
+bool GameManager::isCheckmate(Board board, bool kingIsWhite)
+{
+    int countTable[8][8] = { 0 };
+    Position kingPos;
+
+     // 找到要確認將死的王的位置
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (board.board[i][j].piece.type == 1 && board.board[i][j].piece.isWhiteSide == kingIsWhite)
+            {
+                kingPos.x = j;
+                kingPos.y = i;
+                break;
+            }
+        }
+    }
+
+    Position moveFromPos; // 從哪格移動
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            // 該格有棋 && 敵方棋
+            if (board.board[i][j].piece.type != -1 && board.board[i][j].piece.isWhiteSide != kingIsWhite)
+            {
+                moveFromPos.x = j; moveFromPos.y = i;
+                for (int y = -1; y <= 1; y++) // 以王為中心的九宮格找過一次
+                {
+                    for (int x = -1; x <= 1; x++)
+                    {
+                        if (kingPos.y + y < 0 || kingPos.y + y>7 || kingPos.x + x < 0 || kingPos.x + x>7) // 檢查邊界
+                            continue;
+                        if (!invalidMove(moveFromPos, kingPos, board.board[i][j].piece.type, board)) //可以移動到該格
+                        {
+                            countTable[kingPos.y + y][kingPos.x + x]++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // for test
+    /*cout << "king pos: " << kingPos.x << " " << kingPos.y << endl;
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            cout << countTable[i][j] << " ";
+        }
+        cout << endl;
+    }
+    system("pause");*/
+
+    // 最後檢查countTable
+    for (int i = -1; i <= 1; i++)
+    {
+        for (int j = -1; j <= 1; j++)
+        {
+            if (kingPos.y + i < 0 || kingPos.y + i>7 || kingPos.x + j < 0 || kingPos.x + j>7) // 檢查邊界
+                continue;
+            if (countTable[kingPos.y + i][kingPos.x + j] == 0) // 只要有一格安全，就不會被將軍
+                return false;
+        }
+    }
+    return true;
 }

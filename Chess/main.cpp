@@ -10,12 +10,13 @@ int main()
 	while (!endGame) // menu loop
 	{
 		gameManager.showMenu(); // print game menu
+
 		int cmd;
-		// 除了1.開始遊戲、2.結束程式以外，也許還會新增load選項
 		cout << "Command: ";
 		cin >> cmd;
 		if (cmd == 1)
 		{
+			gameManager.board.resetBoard();
 			gameManager.game(gameManager.board);
 		}
 		else if (cmd == 2)
@@ -25,7 +26,7 @@ int main()
 		else if (cmd == 3)
 		{
 			string fileName;
-			cout << "請輸入要讀取的檔案名稱: ";
+			cout << "請輸入要讀取的檔案名稱(ex: 1.txt): ";
 			cin >> fileName;
 			ifstream file(fileName);
 			if (!file)
@@ -53,7 +54,7 @@ int main()
 		}
 		else
 		{
-			cout << "error" << endl;
+			cout << "error command" << endl;
 		}
 	}
 }

@@ -18,4 +18,5 @@ public:
 	void game(Board board); // game loop
 	void showMenu();
 	bool invalidMove(Position moveFromPos, Position moveToPos, int type, Board board);
+	bool isCheckmate(Board board, bool kingIsWhite);
 };

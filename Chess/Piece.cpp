@@ -42,9 +42,9 @@ Piece::Piece(int type, bool isWhiteSide)
 	else if (type == 5) // knight
 	{
 		if (isWhiteSide)
-			this->icon = 'k';
+			this->icon = 'n';
 		else
-			this->icon = 'K';
+			this->icon = 'N';
 	}
 	else if (type == 6) // pawn
 	{
