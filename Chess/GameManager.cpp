@@ -4,7 +4,7 @@
 GameManager::GameManager()
 {
     // 先假定都是人類玩家
-    this->current_player = 0; // 先假定player1先手
+    this->current_player = 0; // 先假定player1先手(白棋)
     this->players[0] = new HumanPlayer(true);
     this->players[1] = new HumanPlayer(false);
 }
@@ -58,7 +58,7 @@ void GameManager::game(Board chessBoard=Board())
                         validInput = true;
                         if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide))
                         {
-                            cout << "將死!!" << endl;
+                            cout << "黑子將死!!" << endl;
                             endGame = true;
                             system("pause");
                         }
@@ -145,7 +145,7 @@ void GameManager::game(Board chessBoard=Board())
                         validInput = true;
                         if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide))
                         {
-                            cout << "將死!!" << endl;
+                            cout << "白子將死!!" << endl;
                             system("pause");
                             endGame = true;
                         }
@@ -243,6 +243,13 @@ void GameManager::showMenu()
     // 2) load game
     // 3) 我不知道
 }
+
+// 判斷兩點位置是否構成斜線
+bool isTilt(Position moveFromPos, Position moveToPos)
+{
+	return abs(moveFromPos.x - moveToPos.x) == abs(moveFromPos.y - moveToPos.y);
+}
+
 bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type, Board board)
 {
     // 直接判斷了，如果起始點跟結束點棋色相同，一定不對！！
@@ -313,6 +320,10 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         }
         else if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // 右上
         {
+			if (!isTilt(moveFromPos, moveToPos))
+			{
+				return true;
+			}
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
@@ -326,6 +337,10 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         }
         else if (moveFromPos.x < moveToPos.x && moveFromPos.y < moveToPos.y) // 右下
         {
+			if (!isTilt(moveFromPos, moveToPos))
+			{
+				return true;
+			}
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
@@ -339,6 +354,10 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         }
         else if (moveFromPos.x > moveToPos.x && moveFromPos.y > moveToPos.y) // 左上
         {
+			if (!isTilt(moveFromPos, moveToPos))
+			{
+				return true;
+			}
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
@@ -352,6 +371,10 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         }
         else if (moveFromPos.x > moveToPos.x && moveFromPos.y < moveToPos.y) // 左下
         {
+			if (!isTilt(moveFromPos, moveToPos))
+			{
+				return true;
+			}
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
             {
@@ -428,6 +451,10 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
     {
         if (moveFromPos.x == moveToPos.x || moveFromPos.y == moveToPos.y)
             return true;
+		if (!isTilt(moveFromPos, moveToPos))
+		{
+			return true;
+		}
 
         if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // 到右上
         {
@@ -511,7 +538,8 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                     return false;
                 return true;
             }
-            if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y - 1 == moveToPos.y)) // other steps can only move one
+            if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y - 1 == moveToPos.y) &&
+				board.board[moveToPos.y][moveToPos.x].piece.type == -1) // other steps can only move one
                 return false;
             return true;
         }
@@ -526,7 +554,8 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                     return false;
                 return true;
             }
-            if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y + 1 == moveToPos.y))
+            if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y + 1 == moveToPos.y) &&
+				board.board[moveToPos.y][moveToPos.x].piece.type == -1)
                 return false;
             return true;
         }
@@ -541,7 +570,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
 //最後看九宮格是否都被標記，或有己方棋而無法一動
 //如以一來，當達成「下一步會被敵方吃掉」且「無法逃跑」
 //則將死。
-bool GameManager::isCheckmate(Board board, bool kingIsWhite)
+bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // 棋盤與敵方國王顏色
 {
     int countTable[8][8] = { 0 };
     Position kingPos;
@@ -560,7 +589,7 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)
         }
     }
 
-    Position moveFromPos; // 從哪格移動
+	Position moveFromPos, moveToPos; // 從哪格移動
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
@@ -573,11 +602,14 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)
                 {
                     for (int x = -1; x <= 1; x++)
                     {
+						moveToPos.x = kingPos.x + x;
+						moveToPos.y = kingPos.y + y;
                         if (kingPos.y + y < 0 || kingPos.y + y>7 || kingPos.x + x < 0 || kingPos.x + x>7) // 檢查邊界
                             continue;
-                        if (!invalidMove(moveFromPos, kingPos, board.board[i][j].piece.type, board)) //可以移動到該格
+                        if (!invalidMove(moveFromPos, moveToPos, board.board[i][j].piece.type, board)) //可以移動到該格
                         {
-                            countTable[kingPos.y + y][kingPos.x + x]++;
+                            countTable[moveToPos.y][moveToPos.x]++;
+							cout << "x= " << moveFromPos.x << ", y= " << moveFromPos.y << " move to x=" << moveToPos.x << ", y= " << moveToPos.y << endl;
                         }
                     }
                 }
@@ -586,7 +618,8 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)
     }
 
     // for test
-    /*cout << "king pos: " << kingPos.x << " " << kingPos.y << endl;
+	/*cout << "king color: " << kingIsWhite << endl;
+    cout << "king pos: " << kingPos.x << " " << kingPos.y << endl;
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)

@@ -16,6 +16,12 @@ int main()
 		cin >> cmd;
 		if (cmd == 1)
 		{
+			// 初始化設定
+			int setFirstPlayer = 0;
+			cout << "請決定 1)白棋 2)黑棋 先攻: ";
+			cin >> setFirstPlayer;
+			setFirstPlayer--;
+			gameManager.current_player = setFirstPlayer;
 			gameManager.board.resetBoard();
 			gameManager.game(gameManager.board);
 		}
