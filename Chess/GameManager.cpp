@@ -56,9 +56,14 @@ void GameManager::game(Board chessBoard=Board())
                     {
                         players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // ²¾°Ê
                         validInput = true;
+                        if (isCheck(chessBoard, !players[current_player]->isWhiteSide))
+                        {
+                            cout << "¶Â¤l³Q±N­x" << endl;
+                            system("pause");
+                        }
                         if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide))
                         {
-                            cout << "¶Â¤l±N¦º!!" << endl;
+                            cout << "¶Â¤l±N¦º¡A¥Õ¤l³Ó§Q¡I" << endl;
                             endGame = true;
                             system("pause");
                         }
@@ -67,6 +72,8 @@ void GameManager::game(Board chessBoard=Board())
                 else if (type == "exit" || type == "Exit") // §ë­°
                 {
                     endGame = true;
+                    cout << "¥Õ¤l»{¿é¡A¶Â¤l³Ó§Q¡I" << endl;
+                    system("pause");
                     break;
                 }
                 else if (type == "save" || type == "Save")
@@ -100,7 +107,11 @@ void GameManager::game(Board chessBoard=Board())
                 system("cls"); // ²MªÅµe­±
             } while (!validInput); // ¥¿½T¿é¤J¡A¤~Â÷¶}°j°é
 
-            if (endGame) break; // §PÂ_­n¤£­nÂ÷¶}¹CÀ¸
+            if (endGame) // §PÂ_­n¤£­nÂ÷¶}¹CÀ¸
+            {
+                system("cls");
+                break;
+            }
             current_player = (current_player == 0) ? 1 : 0; // ¤Á´«ª±®a
         }
         
@@ -143,9 +154,14 @@ void GameManager::game(Board chessBoard=Board())
                     {
                         players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos);
                         validInput = true;
+                        if (isCheck(chessBoard, !players[current_player]->isWhiteSide))
+                        {
+                            cout << "¥Õ¤l³Q±N­x" << endl;
+                            system("pause");
+                        }
                         if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide))
                         {
-                            cout << "¥Õ¤l±N¦º!!" << endl;
+                            cout << "¥Õ¤l±N¦º¡A¶Â¤l³Ó§Q¡I" << endl;
                             system("pause");
                             endGame = true;
                         }
@@ -155,6 +171,8 @@ void GameManager::game(Board chessBoard=Board())
                 else if (type == "exit" || type == "Exit") // §ë­°
                 {
                     endGame = true;
+                    cout << "¶Â¤l»{¿é¡A¥Õ¤l³Ó§Q¡I" << endl;
+                    system("pause");
                     break;
                 }
                 else if (type == "save" || type == "Save")
@@ -188,7 +206,11 @@ void GameManager::game(Board chessBoard=Board())
                 system("cls");
             } while (!validInput);
 
-            if (endGame) break;
+            if (endGame) // §PÂ_­n¤£­nÂ÷¶}¹CÀ¸
+            {
+                system("cls");
+                break;
+            }
             current_player = (current_player == 0) ? 1 : 0;
         }
     }
@@ -262,7 +284,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         if (board.board[moveToPos.y][moveToPos.x].piece.type != -1 &&
             board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide == board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide) // ²×ÂI¦³´Ñ & »P¤v¦P¦â
             return true;
-        if (abs(moveFromPos.x - moveToPos.x) + abs(moveFromPos.y - moveToPos.y) > 1) // ¨«¤£¥u¤@¨B
+        if (abs(moveFromPos.x - moveToPos.x) > 1 || abs(moveFromPos.y - moveToPos.y) > 1) // ¨«¤£¥u¤@¨B
             return true;
         else
             return false;
@@ -588,6 +610,7 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ýÃ
             }
         }
     }
+    board.board[kingPos.y][kingPos.x].piece = Piece(-1, false);
 
 	Position moveFromPos, moveToPos; // ±q­þ®æ²¾°Ê
     for (int i = 0; i < 8; i++)
@@ -604,12 +627,26 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ýÃ
                     {
 						moveToPos.x = kingPos.x + x;
 						moveToPos.y = kingPos.y + y;
+                        
                         if (kingPos.y + y < 0 || kingPos.y + y>7 || kingPos.x + x < 0 || kingPos.x + x>7) // ÀË¬dÃä¬É
                             continue;
+
+                        Piece tempPiece;
+                        bool isChange = false;
+                        if (board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != kingIsWhite) // ¦pªG­n²¾°Ê¨ìªº¨º®æ¤£¬O¸ò¤ý¦P¦âªº´Ñ(¼Ä¤è´Ñ)
+                        {
+                            isChange = true;
+                            tempPiece = board.board[moveToPos.y][moveToPos.x].piece;
+                            board.board[moveToPos.y][moveToPos.x].piece = Piece(-1, false);
+                        }
                         if (!invalidMove(moveFromPos, moveToPos, board.board[i][j].piece.type, board)) //¥i¥H²¾°Ê¨ì¸Ó®æ
                         {
                             countTable[moveToPos.y][moveToPos.x]++;
-							cout << "x= " << moveFromPos.x << ", y= " << moveFromPos.y << " move to x=" << moveToPos.x << ", y= " << moveToPos.y << endl;
+							//cout << "x= " << moveFromPos.x << ", y= " << moveFromPos.y << " move to x=" << moveToPos.x << ", y= " << moveToPos.y << endl;
+                        }
+                        if (isChange)
+                        {
+                            board.board[moveToPos.y][moveToPos.x].piece = tempPiece;
                         }
                     }
                 }
@@ -637,9 +674,47 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ýÃ
         {
             if (kingPos.y + i < 0 || kingPos.y + i>7 || kingPos.x + j < 0 || kingPos.x + j>7) // ÀË¬dÃä¬É
                 continue;
+            if (board.board[kingPos.y + i][kingPos.x + j].piece.isWhiteSide == kingIsWhite)
+                countTable[kingPos.y + i][kingPos.x + j]++;
             if (countTable[kingPos.y + i][kingPos.x + j] == 0) // ¥u­n¦³¤@®æ¦w¥þ¡A´N¤£·|³Q±N­x
                 return false;
         }
     }
     return true;
+}
+bool GameManager::isCheck(Board board, bool kingIsWhite)
+{
+    Position kingPos;
+
+    // §ä¨ì­n½T»{±N¦ºªº¤ýªº¦ì¸m
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (board.board[i][j].piece.type == 1 && board.board[i][j].piece.isWhiteSide == kingIsWhite)
+            {
+                kingPos.x = j;
+                kingPos.y = i;
+                break;
+            }
+        }
+    }
+
+    Position moveFromPos; // ±q­þ®æ²¾°Ê
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            // ¸Ó®æ¦³´Ñ && ¼Ä¤è´Ñ
+            if (board.board[i][j].piece.type != -1 && board.board[i][j].piece.isWhiteSide != kingIsWhite)
+            {
+                moveFromPos.x = j; moveFromPos.y = i;
+                if (!invalidMove(moveFromPos, kingPos, board.board[i][j].piece.type, board))
+                {
+                    return true; // ¥u­n¦³¤@­Ó´Ñ¤l·|«Â¯Ù¨ì¡A´Nºc¦¨±N­x
+                }
+            }
+        }
+    }
+    return false;
 }

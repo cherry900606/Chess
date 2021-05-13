@@ -19,5 +19,5 @@ void Viewer::showBoard(Board chessBoard)
 	cout << "-移動: move x1 y1 x2 y2" << endl;
 	cout << "-存檔: save" << endl;
 	cout << "-投降: exit" << endl;
-	cout << "請輸入指令: ";
+	cout << "\n請輸入指令: ";
 }
