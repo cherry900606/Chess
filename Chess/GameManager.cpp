@@ -272,7 +272,7 @@ bool isTilt(Position moveFromPos, Position moveToPos)
 	return abs(moveFromPos.x - moveToPos.x) == abs(moveFromPos.y - moveToPos.y);
 }
 
-bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type, Board board)
+bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type, Board& board)
 {
     // 直接判斷了，如果起始點跟結束點棋色相同，一定不對！！
     if (board.board[moveToPos.y][moveToPos.x].piece.type != -1&&

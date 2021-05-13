@@ -17,7 +17,7 @@ public:
 	GameManager(); // initialsize
 	void game(Board board); // game loop
 	void showMenu();
-	bool invalidMove(Position moveFromPos, Position moveToPos, int type, Board board);
+	bool invalidMove(Position moveFromPos, Position moveToPos, int type, Board& board);
 	bool isCheckmate(Board board, bool kingIsWhite);
 	bool isCheck(Board board, bool kingIsWhite);
 	bool Castling(Position moveFromPos, Position moveToPos, Board board);
