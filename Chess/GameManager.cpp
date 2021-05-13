@@ -284,6 +284,34 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         if (board.board[moveToPos.y][moveToPos.x].piece.type != -1 &&
             board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide == board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide) // ²×ÂI¦³´Ñ & »P¤v¦P¦â
             return true;
+        if (moveToPos.y == 7 || moveToPos.y == 0) {
+            if (moveToPos.y == moveFromPos.y) {
+                if (abs(moveToPos.x - moveFromPos.x) == 2) {
+                    //ÀË¬d¬O§_¬O¤ý¨®©ö¦ì
+                    cout << "Check Castling." << endl;
+                    if (Castling(moveFromPos, moveToPos, board)) {
+                        cout << "Castling success." << endl;
+                        system("pause");
+                        if (moveFromPos.x > moveToPos.x) {
+                            //move to left
+                            moveFromPos.x = 0;
+                            moveToPos.x = moveFromPos.x + 3;
+                            players[current_player]->OnMove(board, moveFromPos, moveToPos);
+                        }
+                        else {
+                            //move to right
+                            moveFromPos.x = 7;
+                            moveToPos.x = moveFromPos.x - 2;
+                            players[current_player]->OnMove(board, moveFromPos, moveToPos);
+                        }
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+            }
+        }
         if (abs(moveFromPos.x - moveToPos.x) > 1 || abs(moveFromPos.y - moveToPos.y) > 1) // ¨«¤£¥u¤@¨B
             return true;
         else
@@ -674,7 +702,7 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ýÃ
         {
             if (kingPos.y + i < 0 || kingPos.y + i>7 || kingPos.x + j < 0 || kingPos.x + j>7) // ÀË¬dÃä¬É
                 continue;
-            if (board.board[kingPos.y + i][kingPos.x + j].piece.isWhiteSide == kingIsWhite)
+            if (board.board[kingPos.y + i][kingPos.x + j].piece.isWhiteSide == kingIsWhite && board.board[kingPos.y + i][kingPos.x + j].piece.type != -1)
                 countTable[kingPos.y + i][kingPos.x + j]++;
             if (countTable[kingPos.y + i][kingPos.x + j] == 0) // ¥u­n¦³¤@®æ¦w¥þ¡A´N¤£·|³Q±N­x
                 return false;
@@ -717,4 +745,100 @@ bool GameManager::isCheck(Board board, bool kingIsWhite)
         }
     }
     return false;
+}
+/*Castling
+  ¥Ø«e·Qªk¬O¨Ï¥ÎªÌ¦pªG­n°õ¦æ¤ý¨®©ö¦ì¡Aª½±µ¿é¤J²¾°Ê¤ý¨â®æ§Y¥i
+*/
+bool GameManager::Castling(Position moveFromPos, Position moveToPos, Board board) {
+    int count_attact = 0;
+    //½T»{­n²¾°Êªº¬O¤ý¡A¥B¬O²Ä¤@¦¸²¾°Ê
+    if (board.board[moveFromPos.y][moveFromPos.x].piece.type == 1 && board.board[moveFromPos.y][moveFromPos.x].piece.isFirstMove == true) {
+        if (moveFromPos.x < moveToPos.x && moveFromPos.y == moveToPos.y) {
+            //¥k²¾(µu©ö¦ì)¡A¥B²×ÂIªº¥kÃä¤@®æ¬O«°³ù
+            if (board.board[moveToPos.y][moveToPos.x + 1].piece.type == 3 && board.board[moveToPos.y][moveToPos.x + 1].piece.isFirstMove == true) {
+                //§PÂ_°ê¤ý©M«°³ù¤¤¶¡³£¨S¦³´Ñ¤l
+                for (int i = 1; i <= 2; i++) {
+                    if (board.board[moveFromPos.y][moveFromPos.x + i].piece.type != -1) {
+                        return false;
+                    }
+                }
+                //¤¤¶¡¬õÂI¥Ø«e³£¨S¦³³Q§ðÀ»(¥]§t¤ý¦Û¤v)
+                Position attact_;
+                Position moveToPos_;
+                moveToPos_.x = moveFromPos.x;
+                moveToPos_.y = moveFromPos.y;
+                for (int j = 0; j < 8; j++) {
+                    for (int i = 0; i < 8; i++) {
+                        if (board.board[j][i].piece.type != -1 && board.board[j][i].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide) {
+                            attact_.x = i;
+                            attact_.y = j;
+                            for (int a = 0; a < 3; a++) {
+                                moveToPos_.x++;
+                                moveToPos_.y++;
+                                if (!invalidMove(attact_, moveToPos_, board.board[j][i].piece.type, board)) {
+                                    count_attact++;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (count_attact > 0) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        else if (moveFromPos.x > moveToPos.x && moveFromPos.y == moveToPos.y) {
+            //¥ª²¾(ªø©ö¦ì)¡A¥B²×ÂIªº¥ªÃä¨â®æ¬O«°³ù
+            if (board.board[moveToPos.y][moveToPos.x - 2].piece.type == 3 && board.board[moveToPos.y][moveToPos.x - 2].piece.isFirstMove == true) {
+                //§PÂ_°ê¤ý©M«°³ù¤¤¶¡³£¨S¦³´Ñ¤l
+                for (int i = 1; i <= 3; i++) {
+                    if (board.board[moveFromPos.y][moveFromPos.x - i].piece.type != -1) {
+                        return false;
+                    }
+                }
+                //¤¤¶¡¬õÂI¥Ø«e³£¨S¦³³Q§ðÀ»(¥]§t¤ý¦Û¤v)
+                Position attact_;
+                Position moveToPos_;
+                moveToPos_.x = moveFromPos.x;
+                moveToPos_.y = moveFromPos.y;
+                for (int j = 0; j < 8; j++) {
+                    for (int i = 0; i < 8; i++) {
+                        if (board.board[j][i].piece.type != -1 && board.board[j][i].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide) {
+                            attact_.x = i;
+                            attact_.y = j;
+                            for (int a = 0; a < 3; a++) {
+                                moveToPos_.x--;
+                                moveToPos_.y--;
+                                if (!invalidMove(attact_, moveToPos_, board.board[j][i].piece.type, board)) {
+                                    count_attact++;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (count_attact > 0) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            //to From ¦PÂI
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
 }
