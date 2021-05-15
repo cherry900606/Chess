@@ -52,11 +52,17 @@ void GameManager::game()
                 }
                 else // 正常情況
                 {
-                    players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // 移動
-                    //移動後 是不是 Promotion
-                    isPromotion(1);
+                    players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // 移動                    
                     system("pause");
                     validInput = true;
+                    //移動後 是不是 Promotion
+                    checkPromotion(&chessBoard,&chessBoard.board[moveToPos.y][moveToPos.x].piece);
+                    if (chessBoard.board[0][7].piece.type == 6) {
+                       // cout << "ooo\n";
+                        //chessBoard.board[0][7].piece.icon = 'Q';
+                       // chessBoard.board[0][7].piece.type = '2';
+                        system("pause");
+                    }
                 }
             }
             else if (type == "exit" || type == "Exit") // 投降
@@ -108,6 +114,8 @@ void GameManager::game()
                 {
                     players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos);
                     validInput = true;
+                    //移動後 是不是 Promotion
+                    checkPromotion(&chessBoard, &chessBoard.board[moveToPos.y][moveToPos.x].piece);
                 }
 
             }

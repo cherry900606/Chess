@@ -2,4 +2,4 @@
 #include "Board.h"
 #include "Position.h"
 
-void isPromotion(int);
+void checkPromotion(Board *checssboard, Piece *piece);
