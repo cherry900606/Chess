@@ -21,4 +21,5 @@ public:
 	bool isCheckmate(Board board, bool kingIsWhite);
 	bool isCheck(Board board, bool kingIsWhite);
 	bool Castling(Position moveFromPos, Position moveToPos, Board board);
+	void replay(Board board);
 };

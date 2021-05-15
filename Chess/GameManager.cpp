@@ -8,12 +8,15 @@ GameManager::GameManager()
     this->players[0] = new HumanPlayer(true);
     this->players[1] = new HumanPlayer(false);
 }
-void GameManager::game(Board chessBoard=Board())
+void GameManager::game(Board chessBoard = Board())
 {
-    //Board chessBoard;
+    Board initialBoard = chessBoard;
     Viewer viewer;
     string command, type;
 
+    // log 紀錄先手
+    ofstream file("log.txt");
+    file << current_player << endl;
 
     bool endGame = false;
     while (1)
@@ -27,6 +30,7 @@ void GameManager::game(Board chessBoard=Board())
             {
                 cout << "Now is WHITE turn!\n" << endl;
                 viewer.showBoard(chessBoard);
+                viewer.showHint();
                 getline(cin, command);
 
                 stringstream ss(command); // 切割字串用
@@ -54,6 +58,7 @@ void GameManager::game(Board chessBoard=Board())
                     }
                     else // 正常情況
                     {
+                        file << moveFromPos.x << " " << moveFromPos.y << " " << moveToPos.x << " " << moveToPos.y << endl;
                         players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // 移動
                         validInput = true;
                         if (isCheck(chessBoard, !players[current_player]->isWhiteSide))
@@ -109,7 +114,12 @@ void GameManager::game(Board chessBoard=Board())
 
             if (endGame) // 判斷要不要離開遊戲
             {
-                system("cls");
+                bool isReplay = false;
+                cout << "請問是否重播本局遊戲? 1)是 0)否: ";
+                cin >> isReplay;
+
+                if(isReplay)
+                    replay(initialBoard);
                 break;
             }
             current_player = (current_player == 0) ? 1 : 0; // 切換玩家
@@ -124,6 +134,7 @@ void GameManager::game(Board chessBoard=Board())
             {
                 cout << "Now is BLACK turn!\n" << endl;
                 viewer.showBoard(chessBoard);
+                viewer.showHint();
                 getline(cin, command);
 
                 stringstream ss;
@@ -152,6 +163,7 @@ void GameManager::game(Board chessBoard=Board())
                     }
                     else
                     {
+                        file << moveFromPos.x << " " << moveFromPos.y << " " << moveToPos.x << " " << moveToPos.y << endl;
                         players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos);
                         validInput = true;
                         if (isCheck(chessBoard, !players[current_player]->isWhiteSide))
@@ -208,7 +220,12 @@ void GameManager::game(Board chessBoard=Board())
 
             if (endGame) // 判斷要不要離開遊戲
             {
-                system("cls");
+                bool isReplay = false;
+                cout << "請問是否重播本局遊戲? 1)是 0)否: ";
+                cin >> isReplay;
+
+                if (isReplay)
+                    replay(initialBoard);
                 break;
             }
             current_player = (current_player == 0) ? 1 : 0;
@@ -840,5 +857,25 @@ bool GameManager::Castling(Position moveFromPos, Position moveToPos, Board board
     }
     else {
         return false;
+    }
+}
+void GameManager::replay(Board board)
+{
+    system("cls");
+    viewer.showBoard(board);
+    system("pause");
+    system("cls");
+
+    ifstream file("log.txt");
+    file >> current_player;
+
+    Position outFromPos, outToPos;
+    Viewer viewer;
+    while (file >> outFromPos.x >> outFromPos.y >> outToPos.x >> outToPos.y)
+    {
+        players[current_player]->OnMove(board, outFromPos, outToPos);
+        viewer.showBoard(board);
+        system("pause");
+        system("cls");
     }
 }

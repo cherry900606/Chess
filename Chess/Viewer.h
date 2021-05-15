@@ -5,4 +5,5 @@ class Viewer
 public:
 	Viewer() {};
 	void showBoard(Board board);
+	void showHint();
 };

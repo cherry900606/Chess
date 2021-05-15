@@ -13,11 +13,13 @@ void Viewer::showBoard(Board chessBoard)
             cout << chessBoard.board[i][j].piece.icon << " ";
         cout << endl;
     }
-
-	// print hint
-	cout << "\n<輸入指令提示>" << endl;
-	cout << "-移動: move x1 y1 x2 y2" << endl;
-	cout << "-存檔: save" << endl;
-	cout << "-投降: exit" << endl;
-	cout << "\n請輸入指令: ";
+}
+void Viewer::showHint()
+{
+    // print hint
+    cout << "\n<輸入指令提示>" << endl;
+    cout << "-移動: move x1 y1 x2 y2" << endl;
+    cout << "-存檔: save" << endl;
+    cout << "-投降: exit" << endl;
+    cout << "\n請輸入指令: ";
 }
