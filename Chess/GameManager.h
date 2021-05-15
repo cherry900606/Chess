@@ -2,6 +2,7 @@
 #include "Board.h"
 #include "Player.h"
 #include "Viewer.h"
+#include "Promotion.h"
 #include <vector>
 #include <fstream>
 

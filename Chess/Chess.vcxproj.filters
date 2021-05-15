@@ -36,6 +36,9 @@
     <ClCompile Include="Piece.cpp">
       <Filter>資源檔</Filter>
     </ClCompile>
+    <ClCompile Include="Promotion.cpp">
+      <Filter>資源檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameManager.h">
@@ -54,6 +57,9 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Piece.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Promotion.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

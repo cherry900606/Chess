@@ -60,6 +60,7 @@ void GameManager::game(Board chessBoard = Board())
                     {
                         file << moveFromPos.x << " " << moveFromPos.y << " " << moveToPos.x << " " << moveToPos.y << endl;
                         players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // ²¾°Ê
+                        checkPromotion(&chessBoard, &chessBoard.board[moveToPos.y][moveToPos.x].piece);
                         validInput = true;
                         if (isCheck(chessBoard, !players[current_player]->isWhiteSide))
                         {
@@ -165,6 +166,7 @@ void GameManager::game(Board chessBoard = Board())
                     {
                         file << moveFromPos.x << " " << moveFromPos.y << " " << moveToPos.x << " " << moveToPos.y << endl;
                         players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos);
+                        checkPromotion(&chessBoard, &chessBoard.board[moveToPos.y][moveToPos.x].piece);
                         validInput = true;
                         if (isCheck(chessBoard, !players[current_player]->isWhiteSide))
                         {
