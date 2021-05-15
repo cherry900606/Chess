@@ -10,17 +10,23 @@ GameManager::GameManager()
 }
 void GameManager::game(Board chessBoard = Board())
 {
+    // ¬ö¿ýªì©l´Ñ½L¡A¥H«K­«¼½¹CÀ¸
     Board initialBoard = chessBoard;
+    // ¦L´Ñ½L
     Viewer viewer;
+    // Åª¨ú«ü¥O
     string command, type;
 
     // log ¬ö¿ý¥ý¤â
     ofstream file("log.txt");
     file << current_player << endl;
 
+    // ¬ö¿ý¬O§_µ²§ô¹CÀ¸
     bool endGame = false;
+    // ¹CÀ¸°j°é
     while (1)
     {
+        // Åª¨ì¥¿½T¿é¤J¤~¥i¸õ¥X¥Õ¤l°j°é(move)
         bool validInput = false;
 
         // white turn
@@ -31,12 +37,14 @@ void GameManager::game(Board chessBoard = Board())
                 cout << "Now is WHITE turn!\n" << endl;
                 viewer.showBoard(chessBoard);
                 viewer.showHint();
-                getline(cin, command);
 
+                // Åª¨ú«ü¥O
+                getline(cin, command);
                 stringstream ss(command); // ¤Á³Î¦r¦ê¥Î
                 ss >> type;
                 if (type == "move" || type == "Move") // ²¾°Ê (ex: move 0 0 0 2)
                 {
+                    // ²¾°Ê¦ì¸m¬ö¿ý
                     Position moveToPos, moveFromPos;
                     ss >> moveFromPos.x >> moveFromPos.y >> moveToPos.x >> moveToPos.y;
                     moveFromPos.piece = chessBoard.board[moveFromPos.y][moveFromPos.x].piece;
@@ -58,16 +66,16 @@ void GameManager::game(Board chessBoard = Board())
                     }
                     else // ¥¿±`±¡ªp
                     {
-                        file << moveFromPos.x << " " << moveFromPos.y << " " << moveToPos.x << " " << moveToPos.y << endl;
+                        file << moveFromPos.x << " " << moveFromPos.y << " " << moveToPos.x << " " << moveToPos.y << endl; // log¬ö¿ý
                         players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // ²¾°Ê
-                        checkPromotion(&chessBoard, &chessBoard.board[moveToPos.y][moveToPos.x].piece);
+                        checkPromotion(&chessBoard, &chessBoard.board[moveToPos.y][moveToPos.x].piece); // ÀË¬dpromotion¨Ã°õ¦æ
                         validInput = true;
-                        if (isCheck(chessBoard, !players[current_player]->isWhiteSide))
+                        if (isCheck(chessBoard, !players[current_player]->isWhiteSide)) // ±N­x
                         {
                             cout << "¶Â¤l³Q±N­x" << endl;
                             system("pause");
                         }
-                        if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide))
+                        if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide)) // ±N¦º¡Aµ²§ô¹CÀ¸
                         {
                             cout << "¶Â¤l±N¦º¡A¥Õ¤l³Ó§Q¡I" << endl;
                             endGame = true;
@@ -75,18 +83,18 @@ void GameManager::game(Board chessBoard = Board())
                         }
                     }
                 }
-                else if (type == "exit" || type == "Exit") // §ë­°
+                else if (type == "exit" || type == "Exit") // §ë­°¡Aµ²§ô¹CÀ¸
                 {
                     endGame = true;
                     cout << "¥Õ¤l»{¿é¡A¶Â¤l³Ó§Q¡I" << endl;
                     system("pause");
                     break;
                 }
-                else if (type == "save" || type == "Save")
+                else if (type == "save" || type == "Save") // ÅªÀÉ
                 {
                     string fileName;
                     cout << "save as file name: ";
-                    cin >> fileName;
+                    cin >> fileName; // ¬ö¿ýÀÉ¦W(¥]§t.txt)
 
                     // §âÀÉ¦W°O¿ý°_¨Ó
                     ofstream file(fileName);
@@ -98,12 +106,12 @@ void GameManager::game(Board chessBoard = Board())
                     system("pause");
 
                     // ¶}©l¦sÀÉ
-                    file << this->current_player << endl; // ¤U¦¸¥Ñ½Ö¶}©l
+                    file << this->current_player << endl; // ²Ä¤@¦æ: ¤U¦¸¥Ñ½Ö¶}©l
                     for (int i = 0; i < 8; i++)
                     {
                         for (int j = 0; j < 8; j++)
                         {
-                            if (chessBoard.board[i][j].piece.type != -1) // x y color type icon
+                            if (chessBoard.board[i][j].piece.type != -1) // ®æ¦¡: x y color type icon
                                 file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type <<
                                 chessBoard.board[i][j].piece.icon << endl;
                         }
@@ -244,7 +252,6 @@ void GameManager::game(Board chessBoard = Board())
 }
 void GameManager::showMenu()
 {
-    // ÀH«K±qºô¸ô¤W§ìªº¥Ü·N¹Ï¡A¤§«á¥i¥H§ï±¼
 		cout << "********************************************************************************\n";
 		cout << "*                                                                              *\n";
 		cout << "*                                                                              *\n";
@@ -272,17 +279,8 @@ void GameManager::showMenu()
 		cout << "*                         3) load game                                         *\n";
 		cout << "*                                                                              *\n";
 		cout << "*                                                                              *\n";
-		cout << "*                                                                          v1.0*\n";
+		cout << "*                                                                              *\n";
 		cout << "********************************************************************************\n";
-	
-    
-    // show menu
-    //  -¬ü¤Æ©Îµo´§³Ð·Nªº¤¶­±
-    //  -¥i¥H©ñ­Ó¤À²Õ¦W³æ?
-    // ¨Ì¾Ú¨Ï¥ÎªÌ¿é¤J¡A¿ï¾Ü:
-    // l) play new game
-    // 2) load game
-    // 3) §Ú¤£ª¾¹D
 }
 
 // §PÂ_¨âÂI¦ì¸m¬O§_ºc¦¨±×½u
@@ -389,12 +387,12 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
         }
         else if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // ¥k¤W
         {
-			if (!isTilt(moveFromPos, moveToPos))
+			if (!isTilt(moveFromPos, moveToPos)) // ¤£¬O±×½u
 			{
 				return true;
 			}
             int count = abs(moveFromPos.x - moveToPos.x);
-            for (int i = 1; i <= count; i++)
+            for (int i = 1; i <= count; i++) // ¥H±×²v¬°1ªº¤è¦¡¡AÀË¬d¸ô®|¤W¬O§_¦³´Ñ
             {
                 if (i == count &&
                     board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
@@ -657,9 +655,9 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ýÃ
             }
         }
     }
-    board.board[kingPos.y][kingPos.x].piece = Piece(-1, false);
+    board.board[kingPos.y][kingPos.x].piece = Piece(-1, false); // §ä¨ì¦ì¸m«á¥ý±N¤ý±q´Ñ½L²¾¶}¡A¥H§K¾×¦í³y¦¨¿ù»~§PÂ_
 
-	Position moveFromPos, moveToPos; // ±q­þ®æ²¾°Ê
+	Position moveFromPos, moveToPos; // ±q­þ®æ²¾°Ê & ²¾°Ê¨ì­þ®æ
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
@@ -678,8 +676,9 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ýÃ
                         if (kingPos.y + y < 0 || kingPos.y + y>7 || kingPos.x + x < 0 || kingPos.x + x>7) // ÀË¬dÃä¬É
                             continue;
 
-                        Piece tempPiece;
-                        bool isChange = false;
+                        Piece tempPiece; // ¬ö¿ý¼È®É³Q²¾¶}ªº´Ñ
+                        bool isChange = false; // ¦³¨S¦³²¾¶}´Ñ
+                        // ¬°¤FÁ×§K¾×¦í³y¦¨»~§P¡A»Ý­n¥ý±N¸Ó´Ñ²¾¶}¡A§PÂ_§¹¦A©ñ¦^¥h
                         if (board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != kingIsWhite) // ¦pªG­n²¾°Ê¨ìªº¨º®æ¤£¬O¸ò¤ý¦P¦âªº´Ñ(¼Ä¤è´Ñ)
                         {
                             isChange = true;
@@ -691,7 +690,7 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ýÃ
                             countTable[moveToPos.y][moveToPos.x]++;
 							//cout << "x= " << moveFromPos.x << ", y= " << moveFromPos.y << " move to x=" << moveToPos.x << ", y= " << moveToPos.y << endl;
                         }
-                        if (isChange)
+                        if (isChange) // ²¾°Ê¹L³Ì«á­n©ñ¦^¥h
                         {
                             board.board[moveToPos.y][moveToPos.x].piece = tempPiece;
                         }
@@ -721,7 +720,7 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ýÃ
         {
             if (kingPos.y + i < 0 || kingPos.y + i>7 || kingPos.x + j < 0 || kingPos.x + j>7) // ÀË¬dÃä¬É
                 continue;
-            if (board.board[kingPos.y + i][kingPos.x + j].piece.isWhiteSide == kingIsWhite && board.board[kingPos.y + i][kingPos.x + j].piece.type != -1)
+            if (board.board[kingPos.y + i][kingPos.x + j].piece.isWhiteSide == kingIsWhite && board.board[kingPos.y + i][kingPos.x + j].piece.type != -1) // ¦³¤v¤è´Ñ¡A¦P¼Ë¤£¯à¨«¦¹®æ
                 countTable[kingPos.y + i][kingPos.x + j]++;
             if (countTable[kingPos.y + i][kingPos.x + j] == 0) // ¥u­n¦³¤@®æ¦w¥þ¡A´N¤£·|³Q±N­x
                 return false;
@@ -863,6 +862,7 @@ bool GameManager::Castling(Position moveFromPos, Position moveToPos, Board board
 }
 void GameManager::replay(Board board)
 {
+    // ¦L¥X¤@¶}©l´Ñ½Lªº¼Ë¤l
     system("cls");
     viewer.showBoard(board);
     system("pause");
@@ -873,6 +873,7 @@ void GameManager::replay(Board board)
 
     Position outFromPos, outToPos;
     Viewer viewer;
+    // Åª¨ú²¾°Ê¹Lªº¨C¤@¨B¡A²¾°Ê¨Ã¥B¦L¥X´Ñ½L
     while (file >> outFromPos.x >> outFromPos.y >> outToPos.x >> outToPos.y)
     {
         players[current_player]->OnMove(board, outFromPos, outToPos);

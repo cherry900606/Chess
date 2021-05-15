@@ -14,7 +14,7 @@ int main()
 		int cmd;
 		cout << "Command: ";
 		cin >> cmd;
-		if (cmd == 1)
+		if (cmd == 1) // 新遊戲
 		{
 			// 初始化設定
 			int setFirstPlayer = 0;
@@ -25,11 +25,11 @@ int main()
 			gameManager.board.resetBoard();
 			gameManager.game(gameManager.board);
 		}
-		else if (cmd == 2)
+		else if (cmd == 2) // 離開遊戲
 		{
 			endGame = true;
 		}
-		else if (cmd == 3)
+		else if (cmd == 3) // 讀檔
 		{
 			string fileName;
 			cout << "請輸入要讀取的檔案名稱(ex: 1.txt): ";
@@ -58,7 +58,7 @@ int main()
 			// 重新遊玩
 			gameManager.game(gameManager.board);
 		}
-		else
+		else // 錯誤指令
 		{
 			cout << "error command" << endl;
 		}
