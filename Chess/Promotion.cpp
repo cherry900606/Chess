@@ -3,7 +3,7 @@
 void checkPromotion(Board* chessBoard, Piece* piece) {
 	// White
 	for (int i = 0; i < 8; i++) {
-		if (chessBoard->board[0][i].piece.type == 6) {
+		if (chessBoard->board[0][i].piece.type == 6 && chessBoard->board[0][i].piece.isWhiteSide) {
 			cout << "Please choose what type to promotion!\n";
 			cout << "2) Queen   3) Rook   4) Bishop   5) Knight\nEnter the type: ";
 
@@ -31,7 +31,7 @@ void checkPromotion(Board* chessBoard, Piece* piece) {
 	}
 	// Black
 	for (int i = 0; i < 8; i++) {
-		if (chessBoard->board[7][i].piece.type == 6) {
+		if (chessBoard->board[7][i].piece.type == 6 && !chessBoard->board[0][i].piece.isWhiteSide) {
 			cout << "Please choose what type to promotion!\n";
 			cout << "2) Queen   3) Rook   4) Bishop   5) Knight\nEnter the type: ";
 

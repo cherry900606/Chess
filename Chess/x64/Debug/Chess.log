@@ -1,8 +1,4 @@
 ﻿  GameManager.cpp
 C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(7,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
 C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(16,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
-  main.cpp
-C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(7,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
-C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\Chess\Player.h(16,40): warning C4227: 過時的用法: 已忽略參考上的限定詞
-  正在產生程式碼...
   Chess.vcxproj -> C:\Users\cherry\Desktop\大學\大二下\物件導向程式設計實習\Chess\x64\Debug\Chess.exe

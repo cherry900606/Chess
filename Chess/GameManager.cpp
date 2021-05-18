@@ -77,6 +77,8 @@ void GameManager::game(Board chessBoard = Board())
                         }
                         if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide)) // 將死，結束遊戲
                         {
+                            system("cls");
+                            viewer.showBoard(chessBoard);
                             cout << "黑子將死，白子勝利！" << endl;
                             endGame = true;
                             system("pause");
@@ -183,6 +185,8 @@ void GameManager::game(Board chessBoard = Board())
                         }
                         if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide))
                         {
+                            system("cls");
+                            viewer.showBoard(chessBoard);
                             cout << "白子將死，黑子勝利！" << endl;
                             system("pause");
                             endGame = true;
