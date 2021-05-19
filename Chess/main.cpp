@@ -1,9 +1,12 @@
 ﻿#include <iostream>
+#include <windows.h>
 #include "GameManager.h"
 using namespace std;
-
+void welcome();
 int main()
 {
+	welcome();
+
     GameManager gameManager;
 	bool endGame = false;
 
@@ -65,5 +68,46 @@ int main()
 			system("pause");
 			cmd.clear();
 		}
+	}
+}
+//動畫
+void welcome() {
+	
+	for (int j = 0;j < 8;j++) {
+		for (int i = 0;i <= 2;i++) {
+			cout << endl;
+		}
+		for (int i = 0;i < 10 + j;i++) {
+			cout << " ";
+		}
+		cout << "##      ## ######## ##        ######   #######  ##     ## ########" << endl;
+		for (int i = 0;i < 10 + j;i++) {
+			cout << " ";
+		}
+		cout << "##  ##  ## ##       ##       ##    ## ##     ## ###   ### ##" << endl;
+		for (int i = 0;i < 10 + j;i++) {
+			cout << " ";
+		}
+		cout << "##  ##  ## ##       ##       ##       ##     ## #### #### ##" << endl;
+		for (int i = 0;i < 10 + j;i++) {
+			cout << " ";
+		}
+		cout << "##  ##  ## ######   ##       ##       ##     ## ## ### ## ######" << endl;
+		for (int i = 0;i < 10 + j;i++) {
+			cout << " ";
+		}
+		cout << "##  ##  ## ##       ##       ##       ##     ## ##     ## ##" << endl;
+		for (int i = 0;i < 10 + j;i++) {
+			cout << " ";
+		}
+		cout << "##  ##  ## ##       ##       ##    ## ##     ## ##     ## ##" << endl;
+		for (int i = 0;i < 10 + j;i++) {
+			cout << " ";
+		}
+		cout << " ###  ###  ######## ########  ######   #######  ##     ## ########" << endl;
+		
+		//cout << "-----Welcome to play chess-----";
+		Sleep(300); //停三秒
+		system("cls");
 	}
 }
