@@ -11,6 +11,9 @@ GameManager::GameManager()
 }
 void GameManager::game(Board chessBoard = Board())
 {
+    cin.ignore();
+    system("cls");
+
     // 紀錄初始棋盤，以便重播遊戲
     Board initialBoard = chessBoard;
     // 印棋盤
@@ -24,9 +27,12 @@ void GameManager::game(Board chessBoard = Board())
 
     // 紀錄是否結束遊戲
     bool endGame = false;
-    // 遊戲迴圈
+
+    // 紀錄開始當下時間
     clock_t start, end;
     start = clock();
+
+     // 遊戲迴圈
     while (1)
     {
         // 讀到正確輸入才可跳出白子迴圈(move)
@@ -46,7 +52,6 @@ void GameManager::game(Board chessBoard = Board())
                 
                 stringstream ss(command); // 切割字串用
                 ss >> type;
-
 
                 if (type == "move" || type == "Move") // 移動 (ex: move 0 0 0 2)
                 {
@@ -126,7 +131,7 @@ void GameManager::game(Board chessBoard = Board())
                     }
                     cin.ignore();
                 }
-                // 用盡時間結束
+                // 用盡時間，則結束遊戲
                 end = clock();
                 time_t now = time(0); //當前時間
                 char* dt = ctime(&now); //轉成字串
@@ -138,8 +143,9 @@ void GameManager::game(Board chessBoard = Board())
                     endGame = true;
                 }
                 cout << "已使用秒數: " << timeFrame << endl;
+                // 清空畫面
                 system("pause");
-                system("cls"); // 清空畫面
+                system("cls"); 
             } while (!validInput); // 正確輸入，才離開迴圈
 
             if (endGame) // 判斷要不要離開遊戲
@@ -259,6 +265,7 @@ void GameManager::game(Board chessBoard = Board())
                     endGame = true;
                 }
                 cout << "已使用秒數: " << timeFrame << endl;
+
                 system("pause");
                 system("cls");
             } while (!validInput);
@@ -295,9 +302,9 @@ void GameManager::showMenu()
 		cout << "*        ******     **                                                         *\n";
 		cout << "*      **********   **                                                         *\n";
 		cout << "*    ***            **                                                         *\n";
-		cout << "*   ***             **            ****       ****        ****                  *\n";
-		cout << "*   ***             **          ********   ***  ***    ***  ***                *\n";
-		cout << "*   ***             ** ****    ***    *** ***         ***                      *\n";
+		cout << "*   ***             **            ****       ****        ****                  *         組員: B10832019 林琛琛\n";
+		cout << "*   ***             **          ********   ***  ***    ***  ***                *               B10832031 郭垂蓁\n";
+		cout << "*   ***             ** ****    ***    *** ***         ***                      *               B10615060 李汭璇\n";
 		cout << "*   ***             ****  **   **********   ******      ******                 *\n";
 		cout << "*    ***            ***    **  ***             *****       *****               *\n";
 		cout << "*      **********   **     **   ****       ***   **    ***   **                *\n";
