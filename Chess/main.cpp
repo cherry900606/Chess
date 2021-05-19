@@ -11,10 +11,11 @@ int main()
 	{
 		gameManager.showMenu(); // print game menu
 
-		int cmd;
+		//改成string輸入可防呆，避免使用者輸入英文字導致無限迴圈
+		string cmd;
 		cout << "Command: ";
 		cin >> cmd;
-		if (cmd == 1) // 新遊戲
+		if (cmd == "1") // 新遊戲
 		{
 			// 初始化設定
 			int setFirstPlayer = 0;
@@ -25,11 +26,11 @@ int main()
 			gameManager.board.resetBoard();
 			gameManager.game(gameManager.board);
 		}
-		else if (cmd == 2) // 離開遊戲
+		else if (cmd == "2") // 離開遊戲
 		{
 			endGame = true;
 		}
-		else if (cmd == 3) // 讀檔
+		else if (cmd == "3") // 讀檔
 		{
 			string fileName;
 			cout << "請輸入要讀取的檔案名稱(ex: 1.txt): ";
@@ -61,6 +62,8 @@ int main()
 		else // 錯誤指令
 		{
 			cout << "error command" << endl;
+			system("pause");
+			cmd.clear();
 		}
 	}
 }

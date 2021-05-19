@@ -1,32 +1,35 @@
+ï»¿#define _CRT_SECURE_NO_WARNINGS
 #include "GameManager.h"
 #include <sstream>
-
+#include <time.h>
 GameManager::GameManager()
 {
-    // ¥ı°²©w³£¬O¤HÃşª±®a
-    this->current_player = 0; // ¥ı°²©wplayer1¥ı¤â(¥Õ´Ñ)
+    // å…ˆå‡å®šéƒ½æ˜¯äººé¡ç©å®¶
+    this->current_player = 0; // å…ˆå‡å®šplayer1å…ˆæ‰‹(ç™½æ£‹)
     this->players[0] = new HumanPlayer(true);
     this->players[1] = new HumanPlayer(false);
 }
 void GameManager::game(Board chessBoard = Board())
 {
-    // ¬ö¿ıªì©l´Ñ½L¡A¥H«K­«¼½¹CÀ¸
+    // ç´€éŒ„åˆå§‹æ£‹ç›¤ï¼Œä»¥ä¾¿é‡æ’­éŠæˆ²
     Board initialBoard = chessBoard;
-    // ¦L´Ñ½L
+    // å°æ£‹ç›¤
     Viewer viewer;
-    // Åª¨ú«ü¥O
+    // è®€å–æŒ‡ä»¤
     string command, type;
 
-    // log ¬ö¿ı¥ı¤â
+    // log ç´€éŒ„å…ˆæ‰‹
     ofstream file("log.txt");
     file << current_player << endl;
 
-    // ¬ö¿ı¬O§_µ²§ô¹CÀ¸
+    // ç´€éŒ„æ˜¯å¦çµæŸéŠæˆ²
     bool endGame = false;
-    // ¹CÀ¸°j°é
+    // éŠæˆ²è¿´åœˆ
+    clock_t start, end;
+    start = clock();
     while (1)
     {
-        // Åª¨ì¥¿½T¿é¤J¤~¥i¸õ¥X¥Õ¤l°j°é(move)
+        // è®€åˆ°æ­£ç¢ºè¼¸å…¥æ‰å¯è·³å‡ºç™½å­è¿´åœˆ(move)
         bool validInput = false;
 
         // white turn
@@ -38,102 +41,118 @@ void GameManager::game(Board chessBoard = Board())
                 viewer.showBoard(chessBoard);
                 viewer.showHint();
 
-                // Åª¨ú«ü¥O
+                // è®€å–æŒ‡ä»¤
                 getline(cin, command);
-                stringstream ss(command); // ¤Á³Î¦r¦ê¥Î
+                
+                stringstream ss(command); // åˆ‡å‰²å­—ä¸²ç”¨
                 ss >> type;
-                if (type == "move" || type == "Move") // ²¾°Ê (ex: move 0 0 0 2)
+
+
+                if (type == "move" || type == "Move") // ç§»å‹• (ex: move 0 0 0 2)
                 {
-                    // ²¾°Ê¦ì¸m¬ö¿ı
+                    // ç§»å‹•ä½ç½®ç´€éŒ„
                     Position moveToPos, moveFromPos;
                     ss >> moveFromPos.x >> moveFromPos.y >> moveToPos.x >> moveToPos.y;
                     moveFromPos.piece = chessBoard.board[moveFromPos.y][moveFromPos.x].piece;
 
-                    if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // ±qªÅªº®æ¤l²¾°Ê
+                    if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // å¾ç©ºçš„æ ¼å­ç§»å‹•
                     {
-                        cout << "½Ğ¿ï¾Ü¥¿½Tªº¦ì¸m¡I" << endl;
+                        cout << "è«‹é¸æ“‡æ­£ç¢ºçš„ä½ç½®ï¼" << endl;
                         system("pause");
                     }
-                    else if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != players[current_player]->isWhiteSide) // ²¾°Ê¤£Äİ©ó¦Û¤vªº´Ñ¤l
+                    else if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != players[current_player]->isWhiteSide) // ç§»å‹•ä¸å±¬æ–¼è‡ªå·±çš„æ£‹å­
                     {
-                        cout << "½Ğ¿ï¾Ü¥¿½Tªº´Ñ¤l!" << endl;
+                        cout << "è«‹é¸æ“‡æ­£ç¢ºçš„æ£‹å­!" << endl;
                         system("pause");
                     }
-                    else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // ²¾°Ê¼Ò¦¡¤£²Å¦X´ÑºØ
+                    else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // ç§»å‹•æ¨¡å¼ä¸ç¬¦åˆæ£‹ç¨®
                     {
-                        cout << "¿ù»~ªº²¾°Ê¤è¦¡¡I" << endl;
+                        cout << "éŒ¯èª¤çš„ç§»å‹•æ–¹å¼ï¼" << endl;
                         system("pause");
                     }
-                    else // ¥¿±`±¡ªp
+                    else // æ­£å¸¸æƒ…æ³
                     {
-                        file << moveFromPos.x << " " << moveFromPos.y << " " << moveToPos.x << " " << moveToPos.y << endl; // log¬ö¿ı
-                        players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // ²¾°Ê
-                        checkPromotion(&chessBoard, &chessBoard.board[moveToPos.y][moveToPos.x].piece); // ÀË¬dpromotion¨Ã°õ¦æ
+                        file << moveFromPos.x << " " << moveFromPos.y << " " << moveToPos.x << " " << moveToPos.y << endl; // logç´€éŒ„
+                        players[current_player]->OnMove(chessBoard, moveFromPos, moveToPos); // ç§»å‹•
+                        checkPromotion(&chessBoard, &chessBoard.board[moveToPos.y][moveToPos.x].piece); // æª¢æŸ¥promotionä¸¦åŸ·è¡Œ
                         validInput = true;
-                        if (isCheck(chessBoard, !players[current_player]->isWhiteSide)) // ±N­x
+                        if (isCheck(chessBoard, !players[current_player]->isWhiteSide)) // å°‡è»
                         {
-                            cout << "¶Â¤l³Q±N­x" << endl;
+                            cout << "é»‘å­è¢«å°‡è»" << endl;
                             system("pause");
                         }
-                        if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide)) // ±N¦º¡Aµ²§ô¹CÀ¸
+                        if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide)) // å°‡æ­»ï¼ŒçµæŸéŠæˆ²
                         {
                             system("cls");
                             viewer.showBoard(chessBoard);
-                            cout << "¶Â¤l±N¦º¡A¥Õ¤l³Ó§Q¡I" << endl;
+                            cout << "é»‘å­å°‡æ­»ï¼Œç™½å­å‹åˆ©ï¼" << endl;
                             endGame = true;
                             system("pause");
                         }
                     }
                 }
-                else if (type == "exit" || type == "Exit") // §ë­°¡Aµ²§ô¹CÀ¸
+                else if (type == "exit" || type == "Exit") // æŠ•é™ï¼ŒçµæŸéŠæˆ²
                 {
                     endGame = true;
-                    cout << "¥Õ¤l»{¿é¡A¶Â¤l³Ó§Q¡I" << endl;
+                    cout << "ç™½å­èªè¼¸ï¼Œé»‘å­å‹åˆ©ï¼" << endl;
                     system("pause");
                     break;
                 }
-                else if (type == "save" || type == "Save") // ÅªÀÉ
+                else if (type == "save" || type == "Save") // è®€æª”
                 {
                     string fileName;
                     cout << "save as file name: ";
-                    cin >> fileName; // ¬ö¿ıÀÉ¦W(¥]§t.txt)
+                    cin >> fileName; // ç´€éŒ„æª”å(åŒ…å«.txt)
 
-                    // §âÀÉ¦W°O¿ı°_¨Ó
+                    // æŠŠæª”åè¨˜éŒ„èµ·ä¾†
                     ofstream file(fileName);
                     this->saveFile.push_back(fileName);
                     if (!file)
-                        cout << "¦sÀÉ¥¢±Ñ" << endl;
+                        cout << "å­˜æª”å¤±æ•—" << endl;
                     else
-                        cout << "¦sÀÉ¦¨¥\" << endl;
+                        cout << "å­˜æª”æˆåŠŸ" << endl;
                     system("pause");
 
-                    // ¶}©l¦sÀÉ
-                    file << this->current_player << endl; // ²Ä¤@¦æ: ¤U¦¸¥Ñ½Ö¶}©l
+                    // é–‹å§‹å­˜æª”
+                    file << this->current_player << endl; // ç¬¬ä¸€è¡Œ: ä¸‹æ¬¡ç”±èª°é–‹å§‹
                     for (int i = 0; i < 8; i++)
                     {
                         for (int j = 0; j < 8; j++)
                         {
-                            if (chessBoard.board[i][j].piece.type != -1) // ®æ¦¡: x y color type icon
+                            if (chessBoard.board[i][j].piece.type != -1) // æ ¼å¼: x y color type icon
                                 file << j << " " << i << " " << chessBoard.board[i][j].piece.isWhiteSide << " " << chessBoard.board[i][j].piece.type <<
                                 chessBoard.board[i][j].piece.icon << endl;
                         }
                     }
                     cin.ignore();
                 }
-                system("cls"); // ²MªÅµe­±
-            } while (!validInput); // ¥¿½T¿é¤J¡A¤~Â÷¶}°j°é
+                // ç”¨ç›¡æ™‚é–“çµæŸ
+                end = clock();
+                time_t now = time(0); //ç•¶å‰æ™‚é–“
+                char* dt = ctime(&now); //è½‰æˆå­—ä¸²
+                cout << "æœ¬åœ°æ—¥æœŸå’Œæ™‚é–“ï¼š" << dt << endl;
+                double timeFrame = (double)(end - start) / CLOCKS_PER_SEC;
+                if (timeFrame >= 3600) {
+                    //å¦‚æœéŠæˆ²å·²ç¶“åŸ·è¡Œä¸€å°æ™‚ï¼Œå‰‡çµæŸéŠæˆ²
+                    cout << "ç”¨ç›¡éŠæˆ²æ™‚é–“ã€€éŠæˆ²çµæŸ" << endl;
+                    endGame = true;
+                }
+                cout << "å·²ä½¿ç”¨ç§’æ•¸: " << timeFrame << endl;
+                system("pause");
+                system("cls"); // æ¸…ç©ºç•«é¢
+            } while (!validInput); // æ­£ç¢ºè¼¸å…¥ï¼Œæ‰é›¢é–‹è¿´åœˆ
 
-            if (endGame) // §PÂ_­n¤£­nÂ÷¶}¹CÀ¸
+            if (endGame) // åˆ¤æ–·è¦ä¸è¦é›¢é–‹éŠæˆ²
             {
                 bool isReplay = false;
-                cout << "½Ğ°İ¬O§_­«¼½¥»§½¹CÀ¸? 1)¬O 0)§_: ";
+                cout << "è«‹å•æ˜¯å¦é‡æ’­æœ¬å±€éŠæˆ²? 1)æ˜¯ 0)å¦: ";
                 cin >> isReplay;
 
                 if(isReplay)
                     replay(initialBoard);
                 break;
             }
-            current_player = (current_player == 0) ? 1 : 0; // ¤Á´«ª±®a
+            current_player = (current_player == 0) ? 1 : 0; // åˆ‡æ›ç©å®¶
         }
         
         validInput = false;
@@ -147,29 +166,28 @@ void GameManager::game(Board chessBoard = Board())
                 viewer.showBoard(chessBoard);
                 viewer.showHint();
                 getline(cin, command);
-
                 stringstream ss;
                 ss << command;
                 ss >> type;
-                if (type == "move" || type == "Move") // ²¾°Ê
+                if (type == "move" || type == "Move") // ç§»å‹•
                 {
                     Position moveToPos, moveFromPos;
                     ss >> moveFromPos.x >> moveFromPos.y >> moveToPos.x >> moveToPos.y;
                     moveFromPos.piece = chessBoard.board[moveFromPos.y][moveFromPos.x].piece;
 
-                    if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // ±qªÅªº®æ¤l²¾°Ê
+                    if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type == -1) // å¾ç©ºçš„æ ¼å­ç§»å‹•
                     {
-                        cout << "½Ğ¿ï¾Ü¥¿½Tªº¦ì¸m¡I" << endl;
+                        cout << "è«‹é¸æ“‡æ­£ç¢ºçš„ä½ç½®ï¼" << endl;
                         system("pause");
                     }
                     else if (chessBoard.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != players[current_player]->isWhiteSide)
                     {
-                        cout << "½Ğ¿ï¾Ü¥¿½Tªº´Ñ¤l!" << endl;
+                        cout << "è«‹é¸æ“‡æ­£ç¢ºçš„æ£‹å­!" << endl;
                         system("pause");
                     }
-                    else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // ²¾°Ê¼Ò¦¡¤£²Å¦X´ÑºØ
+                    else if (invalidMove(moveFromPos, moveToPos, chessBoard.board[moveFromPos.y][moveFromPos.x].piece.type, chessBoard)) // ç§»å‹•æ¨¡å¼ä¸ç¬¦åˆæ£‹ç¨®
                     {
-                        cout << "¿ù»~ªº²¾°Ê¤è¦¡¡I" << endl;
+                        cout << "éŒ¯èª¤çš„ç§»å‹•æ–¹å¼ï¼" << endl;
                         system("pause");
                     }
                     else
@@ -180,24 +198,24 @@ void GameManager::game(Board chessBoard = Board())
                         validInput = true;
                         if (isCheck(chessBoard, !players[current_player]->isWhiteSide))
                         {
-                            cout << "¥Õ¤l³Q±N­x" << endl;
+                            cout << "ç™½å­è¢«å°‡è»" << endl;
                             system("pause");
                         }
                         if (isCheckmate(chessBoard, !players[current_player]->isWhiteSide))
                         {
                             system("cls");
                             viewer.showBoard(chessBoard);
-                            cout << "¥Õ¤l±N¦º¡A¶Â¤l³Ó§Q¡I" << endl;
+                            cout << "ç™½å­å°‡æ­»ï¼Œé»‘å­å‹åˆ©ï¼" << endl;
                             system("pause");
                             endGame = true;
                         }
                     }
 
                 }
-                else if (type == "exit" || type == "Exit") // §ë­°
+                else if (type == "exit" || type == "Exit") // æŠ•é™
                 {
                     endGame = true;
-                    cout << "¶Â¤l»{¿é¡A¥Õ¤l³Ó§Q¡I" << endl;
+                    cout << "é»‘å­èªè¼¸ï¼Œç™½å­å‹åˆ©ï¼" << endl;
                     system("pause");
                     break;
                 }
@@ -207,17 +225,17 @@ void GameManager::game(Board chessBoard = Board())
                     cout << "save as file name: ";
                     cin >> fileName;
 
-                    // §âÀÉ¦W°O¿ı°_¨Ó
+                    // æŠŠæª”åè¨˜éŒ„èµ·ä¾†
                     ofstream file(fileName);
                     this->saveFile.push_back(fileName);
                     if (!file)
-                        cout << "¦sÀÉ¥¢±Ñ" << endl;
+                        cout << "å­˜æª”å¤±æ•—" << endl;
                     else
-                        cout << "¦sÀÉ¦¨¥\" << endl;
+                        cout << "å­˜æª”æˆåŠŸ" << endl;
                     system("pause");
 
-                    // ¶}©l¦sÀÉ
-                    file << this->current_player << endl; // ¤U¦¸¥Ñ½Ö¶}©l
+                    // é–‹å§‹å­˜æª”
+                    file << this->current_player << endl; // ä¸‹æ¬¡ç”±èª°é–‹å§‹
                     for (int i = 0; i < 8; i++)
                     {
                         for (int j = 0; j < 8; j++)
@@ -229,13 +247,26 @@ void GameManager::game(Board chessBoard = Board())
                     }
                     cin.ignore();
                 }
+                // ç”¨ç›¡æ™‚é–“çµæŸ
+                end = clock();
+                time_t now = time(0); //ç•¶å‰æ™‚é–“
+                char* dt = ctime(&now); //è½‰æˆå­—ä¸²
+                cout << "æœ¬åœ°æ—¥æœŸå’Œæ™‚é–“ï¼š" << dt << endl;
+                double timeFrame = (double)(end - start) / CLOCKS_PER_SEC;
+                if (timeFrame >= 3600) {
+                    //å¦‚æœéŠæˆ²å·²ç¶“åŸ·è¡Œä¸€å°æ™‚ï¼Œå‰‡çµæŸéŠæˆ²
+                    cout << "ç”¨ç›¡éŠæˆ²æ™‚é–“ã€€éŠæˆ²çµæŸ" << endl;
+                    endGame = true;
+                }
+                cout << "å·²ä½¿ç”¨ç§’æ•¸: " << timeFrame << endl;
+                system("pause");
                 system("cls");
             } while (!validInput);
 
-            if (endGame) // §PÂ_­n¤£­nÂ÷¶}¹CÀ¸
+            if (endGame) // åˆ¤æ–·è¦ä¸è¦é›¢é–‹éŠæˆ²
             {
                 bool isReplay = false;
-                cout << "½Ğ°İ¬O§_­«¼½¥»§½¹CÀ¸? 1)¬O 0)§_: ";
+                cout << "è«‹å•æ˜¯å¦é‡æ’­æœ¬å±€éŠæˆ²? 1)æ˜¯ 0)å¦: ";
                 cin >> isReplay;
 
                 if (isReplay)
@@ -246,13 +277,13 @@ void GameManager::game(Board chessBoard = Board())
         }
     }
     // loop:
-    // ¥ı¤â¤UºX
-    // §PÂ_
-    // «á¤â¤UºX
-    // §PÂ_
+    // å…ˆæ‰‹ä¸‹æ——
+    // åˆ¤æ–·
+    // å¾Œæ‰‹ä¸‹æ——
+    // åˆ¤æ–·
 
-    // ¹CÀ¸µ²§ô
-    // ­n¤£­n¦A¨Ó¤@§½?
+    // éŠæˆ²çµæŸ
+    // è¦ä¸è¦å†ä¾†ä¸€å±€?
 }
 void GameManager::showMenu()
 {
@@ -287,7 +318,7 @@ void GameManager::showMenu()
 		cout << "********************************************************************************\n";
 }
 
-// §PÂ_¨âÂI¦ì¸m¬O§_ºc¦¨±×½u
+// åˆ¤æ–·å…©é»ä½ç½®æ˜¯å¦æ§‹æˆæ–œç·š
 bool isTilt(Position moveFromPos, Position moveToPos)
 {
 	return abs(moveFromPos.x - moveToPos.x) == abs(moveFromPos.y - moveToPos.y);
@@ -295,7 +326,7 @@ bool isTilt(Position moveFromPos, Position moveToPos)
 
 bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type, Board& board)
 {
-    // ª½±µ§PÂ_¤F¡A¦pªG°_©lÂI¸òµ²§ôÂI´Ñ¦â¬Û¦P¡A¤@©w¤£¹ï¡I¡I
+    // ç›´æ¥åˆ¤æ–·äº†ï¼Œå¦‚æœèµ·å§‹é»è·ŸçµæŸé»æ£‹è‰²ç›¸åŒï¼Œä¸€å®šä¸å°ï¼ï¼
     if (board.board[moveToPos.y][moveToPos.x].piece.type != -1&&
         board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide == board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
         return true;
@@ -303,12 +334,12 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
     if (type == 1) // king
     {
         if (board.board[moveToPos.y][moveToPos.x].piece.type != -1 &&
-            board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide == board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide) // ²×ÂI¦³´Ñ & »P¤v¦P¦â
+            board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide == board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide) // çµ‚é»æœ‰æ£‹ & èˆ‡å·±åŒè‰²
             return true;
         if (moveToPos.y == 7 || moveToPos.y == 0) {
             if (moveToPos.y == moveFromPos.y) {
                 if (abs(moveToPos.x - moveFromPos.x) == 2) {
-                    //ÀË¬d¬O§_¬O¤ı¨®©ö¦ì
+                    //æª¢æŸ¥æ˜¯å¦æ˜¯ç‹è»Šæ˜“ä½
                     cout << "Check Castling." << endl;
                     if (Castling(moveFromPos, moveToPos, board)) {
                         cout << "Castling success." << endl;
@@ -333,19 +364,19 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                 }
             }
         }
-        if (abs(moveFromPos.x - moveToPos.x) > 1 || abs(moveFromPos.y - moveToPos.y) > 1) // ¨«¤£¥u¤@¨B
+        if (abs(moveFromPos.x - moveToPos.x) > 1 || abs(moveFromPos.y - moveToPos.y) > 1) // èµ°ä¸åªä¸€æ­¥
             return true;
         else
             return false;
     }
     else if (type == 2) // queen
     {
-        if (moveFromPos.x == moveToPos.x && moveFromPos.y > moveToPos.y) // ¤W
+        if (moveFromPos.x == moveToPos.x && moveFromPos.y > moveToPos.y) // ä¸Š
         {
             int count = abs(moveFromPos.y - moveToPos.y);
             for (int i = 1; i <= count; i++)
             {
-                // ²×ÂI¦³´Ñ && »P¤v²§¦â
+                // çµ‚é»æœ‰æ£‹ && èˆ‡å·±ç•°è‰²
                 if (i == count &&
                     board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
                     return false;
@@ -353,7 +384,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                     return true;
             }
         }
-        else if (moveFromPos.x == moveToPos.x && moveFromPos.y < moveToPos.y) // ¤U
+        else if (moveFromPos.x == moveToPos.x && moveFromPos.y < moveToPos.y) // ä¸‹
         {
             int count = abs(moveFromPos.y - moveToPos.y);
             for (int i = 1; i <= count; i++)
@@ -365,7 +396,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                     return true;
             }
         }
-        else if (moveFromPos.y == moveToPos.y && moveFromPos.x > moveToPos.x) // ¥ª
+        else if (moveFromPos.y == moveToPos.y && moveFromPos.x > moveToPos.x) // å·¦
         {
             int count = abs(moveFromPos.y - moveToPos.y);
             for (int i = 1; i <= count; i++)
@@ -377,7 +408,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                     return true;
             }
         }
-        else if (moveFromPos.y == moveToPos.y && moveFromPos.x < moveToPos.x) // ¥k
+        else if (moveFromPos.y == moveToPos.y && moveFromPos.x < moveToPos.x) // å³
         {
             int count = abs(moveFromPos.y - moveToPos.y);
             for (int i = 1; i <= count; i++)
@@ -389,14 +420,14 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                     return true;
             }
         }
-        else if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // ¥k¤W
+        else if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // å³ä¸Š
         {
-			if (!isTilt(moveFromPos, moveToPos)) // ¤£¬O±×½u
+			if (!isTilt(moveFromPos, moveToPos)) // ä¸æ˜¯æ–œç·š
 			{
 				return true;
 			}
             int count = abs(moveFromPos.x - moveToPos.x);
-            for (int i = 1; i <= count; i++) // ¥H±×²v¬°1ªº¤è¦¡¡AÀË¬d¸ô®|¤W¬O§_¦³´Ñ
+            for (int i = 1; i <= count; i++) // ä»¥æ–œç‡ç‚º1çš„æ–¹å¼ï¼Œæª¢æŸ¥è·¯å¾‘ä¸Šæ˜¯å¦æœ‰æ£‹
             {
                 if (i == count &&
                     board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide)
@@ -406,7 +437,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             }
             return false;
         }
-        else if (moveFromPos.x < moveToPos.x && moveFromPos.y < moveToPos.y) // ¥k¤U
+        else if (moveFromPos.x < moveToPos.x && moveFromPos.y < moveToPos.y) // å³ä¸‹
         {
 			if (!isTilt(moveFromPos, moveToPos))
 			{
@@ -423,7 +454,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             }
             return false;
         }
-        else if (moveFromPos.x > moveToPos.x && moveFromPos.y > moveToPos.y) // ¥ª¤W
+        else if (moveFromPos.x > moveToPos.x && moveFromPos.y > moveToPos.y) // å·¦ä¸Š
         {
 			if (!isTilt(moveFromPos, moveToPos))
 			{
@@ -440,7 +471,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             }
             return false;
         }
-        else if (moveFromPos.x > moveToPos.x && moveFromPos.y < moveToPos.y) // ¥ª¤U
+        else if (moveFromPos.x > moveToPos.x && moveFromPos.y < moveToPos.y) // å·¦ä¸‹
         {
 			if (!isTilt(moveFromPos, moveToPos))
 			{
@@ -460,13 +491,13 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
     }
     else if (type == 3) // rook
     {
-        if ((moveFromPos.x == moveToPos.x) && abs(moveFromPos.y - moveToPos.y) != 0) // ¨«ª½½u
+        if ((moveFromPos.x == moveToPos.x) && abs(moveFromPos.y - moveToPos.y) != 0) // èµ°ç›´ç·š
         {
-            if (moveFromPos.y > moveToPos.y) // ©¹¤W¨«
+            if (moveFromPos.y > moveToPos.y) // å¾€ä¸Šèµ°
             {
-                for (int i = moveFromPos.y - 1; i >= moveToPos.y; i--) // ±q¦Û¤v¤W­±¨º®æ¨«°_
+                for (int i = moveFromPos.y - 1; i >= moveToPos.y; i--) // å¾è‡ªå·±ä¸Šé¢é‚£æ ¼èµ°èµ·
                 {
-                    // ³Ì«á¤@¨B && ¬O¼Ä¤è´Ñ
+                    // æœ€å¾Œä¸€æ­¥ && æ˜¯æ•µæ–¹æ£‹
                     if (i == moveToPos.y && board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide)
                         return false;
                     if (board.board[i][moveFromPos.x].piece.type != -1)
@@ -474,11 +505,11 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                 }
                 return false;
             }
-            else // ©¹¤U¨«
+            else // å¾€ä¸‹èµ°
             {
-                for (int i = moveFromPos.y + 1; i <= moveToPos.y; i++) // ±q¦Û¤v¤U­±¨º®æ¨«°_
+                for (int i = moveFromPos.y + 1; i <= moveToPos.y; i++) // å¾è‡ªå·±ä¸‹é¢é‚£æ ¼èµ°èµ·
                 {
-                    // ³Ì«á¤@¨B && ¬O¼Ä¤è´Ñ
+                    // æœ€å¾Œä¸€æ­¥ && æ˜¯æ•µæ–¹æ£‹
                     if (i == moveToPos.y && board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide)
                         return false;
                     if (board.board[i][moveFromPos.x].piece.type != -1)
@@ -487,29 +518,29 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                 return false;
             }
         }
-        else if ((moveFromPos.y == moveToPos.y) && abs(moveFromPos.x - moveToPos.x) != 0) // ¨«¾î½u
+        else if ((moveFromPos.y == moveToPos.y) && abs(moveFromPos.x - moveToPos.x) != 0) // èµ°æ©«ç·š
         {
-            if (moveFromPos.x > moveToPos.x) // ©¹¥ª¨«
+            if (moveFromPos.x > moveToPos.x) // å¾€å·¦èµ°
             {
-                for (int i = moveFromPos.x - 1; i >= moveToPos.x; i--) // ±q¥ªÃä¤@®æ¨«°_
+                for (int i = moveFromPos.x - 1; i >= moveToPos.x; i--) // å¾å·¦é‚Šä¸€æ ¼èµ°èµ·
                 {
-                    // ³Ì²×®æ && ¼Ä¤è´Ñ
+                    // æœ€çµ‚æ ¼ && æ•µæ–¹æ£‹
                     if (i == moveToPos.x && board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide)
                         return false;
-                    // ¤£¬OªÅ®æ
+                    // ä¸æ˜¯ç©ºæ ¼
                     if (board.board[moveFromPos.y][i].piece.type != -1)
                         return true;
                 }
                 return false;
             }
-            else // ©¹¥k¨«
+            else // å¾€å³èµ°
             {
-                for (int i = moveFromPos.x + 1; i <= moveToPos.x; i++) // ±q¥kÃä¤@®æ¨«°_
+                for (int i = moveFromPos.x + 1; i <= moveToPos.x; i++) // å¾å³é‚Šä¸€æ ¼èµ°èµ·
                 {
-                    // ³Ì²×®æ && ¼Ä¤è´Ñ
+                    // æœ€çµ‚æ ¼ && æ•µæ–¹æ£‹
                     if (i == moveToPos.x && board.board[moveFromPos.y][moveFromPos.x].piece.isWhiteSide != board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide)
                         return false;
-                    // ¤£¬OªÅ®æ
+                    // ä¸æ˜¯ç©ºæ ¼
                     if (board.board[moveFromPos.y][i].piece.type != -1)
                         return true;
                 }
@@ -527,7 +558,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
 			return true;
 		}
 
-        if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // ¨ì¥k¤W
+        if (moveFromPos.x < moveToPos.x && moveFromPos.y > moveToPos.y) // åˆ°å³ä¸Š
         {
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
@@ -540,7 +571,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             }
             return false;
         }
-        else if (moveFromPos.x < moveToPos.x && moveFromPos.y < moveToPos.y) // ¥k¤U
+        else if (moveFromPos.x < moveToPos.x && moveFromPos.y < moveToPos.y) // å³ä¸‹
         {
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
@@ -553,7 +584,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             }
             return false;
         }
-        else if (moveFromPos.x > moveToPos.x && moveFromPos.y > moveToPos.y) // ¥ª¤W
+        else if (moveFromPos.x > moveToPos.x && moveFromPos.y > moveToPos.y) // å·¦ä¸Š
         {
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
@@ -566,7 +597,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
             }
             return false;
         }
-        else if (moveFromPos.x > moveToPos.x && moveFromPos.y < moveToPos.y) // ¥ª¤U
+        else if (moveFromPos.x > moveToPos.x && moveFromPos.y < moveToPos.y) // å·¦ä¸‹
         {
             int count = abs(moveFromPos.x - moveToPos.x);
             for (int i = 1; i <= count; i++)
@@ -583,27 +614,27 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
     }
     else if (type == 5) // knight
     {
-        if (moveFromPos.y - 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // ¤W¨â¨B ¥ª¥k
+        if (moveFromPos.y - 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // ä¸Šå…©æ­¥ å·¦å³
             return false;
-        if (moveFromPos.y + 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // ¤U¨â¨B ¥ª¥k
+        if (moveFromPos.y + 2 == moveToPos.y && abs(moveFromPos.x - moveToPos.x) == 1) // ä¸‹å…©æ­¥ å·¦å³
             return false;
-        if (moveFromPos.x - 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // ¥ª¨â¨B ¤W¤U
+        if (moveFromPos.x - 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // å·¦å…©æ­¥ ä¸Šä¸‹
             return false;
-        if (moveFromPos.x + 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // ¥k¨â¨B ¤W¤U
+        if (moveFromPos.x + 2 == moveToPos.x && abs(moveFromPos.y - moveToPos.y) == 1) // å³å…©æ­¥ ä¸Šä¸‹
             return false;
         return true;
     }
     else if (type == 6) // pawn
     {
-        if (moveFromPos.piece.isWhiteSide) //¥Õ¤l¥u¯à©¹¤W¨«
+        if (moveFromPos.piece.isWhiteSide) //ç™½å­åªèƒ½å¾€ä¸Šèµ°
         {
-            // ±×«e¤è¤@®æ¦Y¤l
+            // æ–œå‰æ–¹ä¸€æ ¼åƒå­
             if (abs(moveFromPos.x - moveToPos.x) == 1 && moveFromPos.y - 1 == moveToPos.y)
                 return false;
-            // ¤@¯ë²¾°Ê
+            // ä¸€èˆ¬ç§»å‹•
             if (moveFromPos.piece.isFirstMove) // first step can move one or two
             {
-                // ©¹¤W¨« && ²×ÂIªÅ®æ(¤£¶Â¤£¥Õ)
+                // å¾€ä¸Šèµ° && çµ‚é»ç©ºæ ¼(ä¸é»‘ä¸ç™½)
                 if ((moveFromPos.x == moveToPos.x) && (moveFromPos.y - 1 == moveToPos.y || moveFromPos.y - 2 == moveToPos.y) &&
                     board.board[moveToPos.y][moveToPos.x].piece.type == -1)
                     return false;
@@ -614,7 +645,7 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
                 return false;
             return true;
         }
-        else // ¶Â¤l¥u¯à©¹¤U¨«
+        else // é»‘å­åªèƒ½å¾€ä¸‹èµ°
         {
             if (abs(moveFromPos.x - moveToPos.x) == 1 && moveFromPos.y + 1 == moveToPos.y)
                 return false;
@@ -634,19 +665,19 @@ bool GameManager::invalidMove(Position moveFromPos, Position moveToPos, int type
     return false;
 }
 
-//±N¦ºªº§PÂ_¤èªk:
-//°ê¤ı¥i¥H¨«ªº§Y¬°¥]¬A¦Û¨­¦b¤ºªº¤E®c®æ
-//¦]¦¹¡A¥u»İ±N¼Ä¤è´Ñ¤l¥ş³¡§PÂ_¹L¤@¦¸¡A
-//­Y¸Ó´Ñ¤l¥i¥H²¾°Ê¨ì¤E®c®æ¤§¤@¡A§Y°µ¼Ğ°O
-//³Ì«á¬İ¤E®c®æ¬O§_³£³Q¼Ğ°O¡A©Î¦³¤v¤è´Ñ¦ÓµLªk¤@°Ê
-//¦p¥H¤@¨Ó¡A·í¹F¦¨¡u¤U¤@¨B·|³Q¼Ä¤è¦Y±¼¡v¥B¡uµLªk°k¶]¡v
-//«h±N¦º¡C
-bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ıÃC¦â
+//å°‡æ­»çš„åˆ¤æ–·æ–¹æ³•:
+//åœ‹ç‹å¯ä»¥èµ°çš„å³ç‚ºåŒ…æ‹¬è‡ªèº«åœ¨å…§çš„ä¹å®®æ ¼
+//å› æ­¤ï¼Œåªéœ€å°‡æ•µæ–¹æ£‹å­å…¨éƒ¨åˆ¤æ–·éä¸€æ¬¡ï¼Œ
+//è‹¥è©²æ£‹å­å¯ä»¥ç§»å‹•åˆ°ä¹å®®æ ¼ä¹‹ä¸€ï¼Œå³åšæ¨™è¨˜
+//æœ€å¾Œçœ‹ä¹å®®æ ¼æ˜¯å¦éƒ½è¢«æ¨™è¨˜ï¼Œæˆ–æœ‰å·±æ–¹æ£‹è€Œç„¡æ³•ä¸€å‹•
+//å¦‚ä»¥ä¸€ä¾†ï¼Œç•¶é”æˆã€Œä¸‹ä¸€æ­¥æœƒè¢«æ•µæ–¹åƒæ‰ã€ä¸”ã€Œç„¡æ³•é€ƒè·‘ã€
+//å‰‡å°‡æ­»ã€‚
+bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // æ£‹ç›¤èˆ‡æ•µæ–¹åœ‹ç‹é¡è‰²
 {
     int countTable[8][8] = { 0 };
     Position kingPos;
 
-     // §ä¨ì­n½T»{±N¦ºªº¤ıªº¦ì¸m
+     // æ‰¾åˆ°è¦ç¢ºèªå°‡æ­»çš„ç‹çš„ä½ç½®
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
@@ -659,42 +690,42 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ıÃ
             }
         }
     }
-    board.board[kingPos.y][kingPos.x].piece = Piece(-1, false); // §ä¨ì¦ì¸m«á¥ı±N¤ı±q´Ñ½L²¾¶}¡A¥H§K¾×¦í³y¦¨¿ù»~§PÂ_
+    board.board[kingPos.y][kingPos.x].piece = Piece(-1, false); // æ‰¾åˆ°ä½ç½®å¾Œå…ˆå°‡ç‹å¾æ£‹ç›¤ç§»é–‹ï¼Œä»¥å…æ“‹ä½é€ æˆéŒ¯èª¤åˆ¤æ–·
 
-	Position moveFromPos, moveToPos; // ±q­ş®æ²¾°Ê & ²¾°Ê¨ì­ş®æ
+	Position moveFromPos, moveToPos; // å¾å“ªæ ¼ç§»å‹• & ç§»å‹•åˆ°å“ªæ ¼
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
         {
-            // ¸Ó®æ¦³´Ñ && ¼Ä¤è´Ñ
+            // è©²æ ¼æœ‰æ£‹ && æ•µæ–¹æ£‹
             if (board.board[i][j].piece.type != -1 && board.board[i][j].piece.isWhiteSide != kingIsWhite)
             {
                 moveFromPos.x = j; moveFromPos.y = i;
-                for (int y = -1; y <= 1; y++) // ¥H¤ı¬°¤¤¤ßªº¤E®c®æ§ä¹L¤@¦¸
+                for (int y = -1; y <= 1; y++) // ä»¥ç‹ç‚ºä¸­å¿ƒçš„ä¹å®®æ ¼æ‰¾éä¸€æ¬¡
                 {
                     for (int x = -1; x <= 1; x++)
                     {
 						moveToPos.x = kingPos.x + x;
 						moveToPos.y = kingPos.y + y;
                         
-                        if (kingPos.y + y < 0 || kingPos.y + y>7 || kingPos.x + x < 0 || kingPos.x + x>7) // ÀË¬dÃä¬É
+                        if (kingPos.y + y < 0 || kingPos.y + y>7 || kingPos.x + x < 0 || kingPos.x + x>7) // æª¢æŸ¥é‚Šç•Œ
                             continue;
 
-                        Piece tempPiece; // ¬ö¿ı¼È®É³Q²¾¶}ªº´Ñ
-                        bool isChange = false; // ¦³¨S¦³²¾¶}´Ñ
-                        // ¬°¤FÁ×§K¾×¦í³y¦¨»~§P¡A»İ­n¥ı±N¸Ó´Ñ²¾¶}¡A§PÂ_§¹¦A©ñ¦^¥h
-                        if (board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != kingIsWhite) // ¦pªG­n²¾°Ê¨ìªº¨º®æ¤£¬O¸ò¤ı¦P¦âªº´Ñ(¼Ä¤è´Ñ)
+                        Piece tempPiece; // ç´€éŒ„æš«æ™‚è¢«ç§»é–‹çš„æ£‹
+                        bool isChange = false; // æœ‰æ²’æœ‰ç§»é–‹æ£‹
+                        // ç‚ºäº†é¿å…æ“‹ä½é€ æˆèª¤åˆ¤ï¼Œéœ€è¦å…ˆå°‡è©²æ£‹ç§»é–‹ï¼Œåˆ¤æ–·å®Œå†æ”¾å›å»
+                        if (board.board[moveToPos.y][moveToPos.x].piece.isWhiteSide != kingIsWhite) // å¦‚æœè¦ç§»å‹•åˆ°çš„é‚£æ ¼ä¸æ˜¯è·Ÿç‹åŒè‰²çš„æ£‹(æ•µæ–¹æ£‹)
                         {
                             isChange = true;
                             tempPiece = board.board[moveToPos.y][moveToPos.x].piece;
                             board.board[moveToPos.y][moveToPos.x].piece = Piece(-1, false);
                         }
-                        if (!invalidMove(moveFromPos, moveToPos, board.board[i][j].piece.type, board)) //¥i¥H²¾°Ê¨ì¸Ó®æ
+                        if (!invalidMove(moveFromPos, moveToPos, board.board[i][j].piece.type, board)) //å¯ä»¥ç§»å‹•åˆ°è©²æ ¼
                         {
                             countTable[moveToPos.y][moveToPos.x]++;
 							//cout << "x= " << moveFromPos.x << ", y= " << moveFromPos.y << " move to x=" << moveToPos.x << ", y= " << moveToPos.y << endl;
                         }
-                        if (isChange) // ²¾°Ê¹L³Ì«á­n©ñ¦^¥h
+                        if (isChange) // ç§»å‹•éæœ€å¾Œè¦æ”¾å›å»
                         {
                             board.board[moveToPos.y][moveToPos.x].piece = tempPiece;
                         }
@@ -717,16 +748,16 @@ bool GameManager::isCheckmate(Board board, bool kingIsWhite)  // ´Ñ½L»P¼Ä¤è°ê¤ıÃ
     }
     system("pause");*/
 
-    // ³Ì«áÀË¬dcountTable
+    // æœ€å¾Œæª¢æŸ¥countTable
     for (int i = -1; i <= 1; i++)
     {
         for (int j = -1; j <= 1; j++)
         {
-            if (kingPos.y + i < 0 || kingPos.y + i>7 || kingPos.x + j < 0 || kingPos.x + j>7) // ÀË¬dÃä¬É
+            if (kingPos.y + i < 0 || kingPos.y + i>7 || kingPos.x + j < 0 || kingPos.x + j>7) // æª¢æŸ¥é‚Šç•Œ
                 continue;
-            if (board.board[kingPos.y + i][kingPos.x + j].piece.isWhiteSide == kingIsWhite && board.board[kingPos.y + i][kingPos.x + j].piece.type != -1) // ¦³¤v¤è´Ñ¡A¦P¼Ë¤£¯à¨«¦¹®æ
+            if (board.board[kingPos.y + i][kingPos.x + j].piece.isWhiteSide == kingIsWhite && board.board[kingPos.y + i][kingPos.x + j].piece.type != -1) // æœ‰å·±æ–¹æ£‹ï¼ŒåŒæ¨£ä¸èƒ½èµ°æ­¤æ ¼
                 countTable[kingPos.y + i][kingPos.x + j]++;
-            if (countTable[kingPos.y + i][kingPos.x + j] == 0) // ¥u­n¦³¤@®æ¦w¥ş¡A´N¤£·|³Q±N­x
+            if (countTable[kingPos.y + i][kingPos.x + j] == 0) // åªè¦æœ‰ä¸€æ ¼å®‰å…¨ï¼Œå°±ä¸æœƒè¢«å°‡è»
                 return false;
         }
     }
@@ -736,7 +767,7 @@ bool GameManager::isCheck(Board board, bool kingIsWhite)
 {
     Position kingPos;
 
-    // §ä¨ì­n½T»{±N¦ºªº¤ıªº¦ì¸m
+    // æ‰¾åˆ°è¦ç¢ºèªå°‡æ­»çš„ç‹çš„ä½ç½®
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
@@ -750,18 +781,18 @@ bool GameManager::isCheck(Board board, bool kingIsWhite)
         }
     }
 
-    Position moveFromPos; // ±q­ş®æ²¾°Ê
+    Position moveFromPos; // å¾å“ªæ ¼ç§»å‹•
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
         {
-            // ¸Ó®æ¦³´Ñ && ¼Ä¤è´Ñ
+            // è©²æ ¼æœ‰æ£‹ && æ•µæ–¹æ£‹
             if (board.board[i][j].piece.type != -1 && board.board[i][j].piece.isWhiteSide != kingIsWhite)
             {
                 moveFromPos.x = j; moveFromPos.y = i;
                 if (!invalidMove(moveFromPos, kingPos, board.board[i][j].piece.type, board))
                 {
-                    return true; // ¥u­n¦³¤@­Ó´Ñ¤l·|«Â¯Ù¨ì¡A´Nºc¦¨±N­x
+                    return true; // åªè¦æœ‰ä¸€å€‹æ£‹å­æœƒå¨è„…åˆ°ï¼Œå°±æ§‹æˆå°‡è»
                 }
             }
         }
@@ -769,22 +800,22 @@ bool GameManager::isCheck(Board board, bool kingIsWhite)
     return false;
 }
 /*Castling
-  ¥Ø«e·Qªk¬O¨Ï¥ÎªÌ¦pªG­n°õ¦æ¤ı¨®©ö¦ì¡Aª½±µ¿é¤J²¾°Ê¤ı¨â®æ§Y¥i
+  ç›®å‰æƒ³æ³•æ˜¯ä½¿ç”¨è€…å¦‚æœè¦åŸ·è¡Œç‹è»Šæ˜“ä½ï¼Œç›´æ¥è¼¸å…¥ç§»å‹•ç‹å…©æ ¼å³å¯
 */
 bool GameManager::Castling(Position moveFromPos, Position moveToPos, Board board) {
     int count_attact = 0;
-    //½T»{­n²¾°Êªº¬O¤ı¡A¥B¬O²Ä¤@¦¸²¾°Ê
+    //ç¢ºèªè¦ç§»å‹•çš„æ˜¯ç‹ï¼Œä¸”æ˜¯ç¬¬ä¸€æ¬¡ç§»å‹•
     if (board.board[moveFromPos.y][moveFromPos.x].piece.type == 1 && board.board[moveFromPos.y][moveFromPos.x].piece.isFirstMove == true) {
         if (moveFromPos.x < moveToPos.x && moveFromPos.y == moveToPos.y) {
-            //¥k²¾(µu©ö¦ì)¡A¥B²×ÂIªº¥kÃä¤@®æ¬O«°³ù
+            //å³ç§»(çŸ­æ˜“ä½)ï¼Œä¸”çµ‚é»çš„å³é‚Šä¸€æ ¼æ˜¯åŸå ¡
             if (board.board[moveToPos.y][moveToPos.x + 1].piece.type == 3 && board.board[moveToPos.y][moveToPos.x + 1].piece.isFirstMove == true) {
-                //§PÂ_°ê¤ı©M«°³ù¤¤¶¡³£¨S¦³´Ñ¤l
+                //åˆ¤æ–·åœ‹ç‹å’ŒåŸå ¡ä¸­é–“éƒ½æ²’æœ‰æ£‹å­
                 for (int i = 1; i <= 2; i++) {
                     if (board.board[moveFromPos.y][moveFromPos.x + i].piece.type != -1) {
                         return false;
                     }
                 }
-                //¤¤¶¡¬õÂI¥Ø«e³£¨S¦³³Q§ğÀ»(¥]§t¤ı¦Û¤v)
+                //ä¸­é–“ç´…é»ç›®å‰éƒ½æ²’æœ‰è¢«æ”»æ“Š(åŒ…å«ç‹è‡ªå·±)
                 Position attact_;
                 Position moveToPos_;
                 moveToPos_.x = moveFromPos.x;
@@ -816,15 +847,15 @@ bool GameManager::Castling(Position moveFromPos, Position moveToPos, Board board
             }
         }
         else if (moveFromPos.x > moveToPos.x && moveFromPos.y == moveToPos.y) {
-            //¥ª²¾(ªø©ö¦ì)¡A¥B²×ÂIªº¥ªÃä¨â®æ¬O«°³ù
+            //å·¦ç§»(é•·æ˜“ä½)ï¼Œä¸”çµ‚é»çš„å·¦é‚Šå…©æ ¼æ˜¯åŸå ¡
             if (board.board[moveToPos.y][moveToPos.x - 2].piece.type == 3 && board.board[moveToPos.y][moveToPos.x - 2].piece.isFirstMove == true) {
-                //§PÂ_°ê¤ı©M«°³ù¤¤¶¡³£¨S¦³´Ñ¤l
+                //åˆ¤æ–·åœ‹ç‹å’ŒåŸå ¡ä¸­é–“éƒ½æ²’æœ‰æ£‹å­
                 for (int i = 1; i <= 3; i++) {
                     if (board.board[moveFromPos.y][moveFromPos.x - i].piece.type != -1) {
                         return false;
                     }
                 }
-                //¤¤¶¡¬õÂI¥Ø«e³£¨S¦³³Q§ğÀ»(¥]§t¤ı¦Û¤v)
+                //ä¸­é–“ç´…é»ç›®å‰éƒ½æ²’æœ‰è¢«æ”»æ“Š(åŒ…å«ç‹è‡ªå·±)
                 Position attact_;
                 Position moveToPos_;
                 moveToPos_.x = moveFromPos.x;
@@ -856,7 +887,7 @@ bool GameManager::Castling(Position moveFromPos, Position moveToPos, Board board
             }
         }
         else {
-            //to From ¦PÂI
+            //to From åŒé»
             return false;
         }
     }
@@ -866,7 +897,7 @@ bool GameManager::Castling(Position moveFromPos, Position moveToPos, Board board
 }
 void GameManager::replay(Board board)
 {
-    // ¦L¥X¤@¶}©l´Ñ½Lªº¼Ë¤l
+    // å°å‡ºä¸€é–‹å§‹æ£‹ç›¤çš„æ¨£å­
     system("cls");
     viewer.showBoard(board);
     system("pause");
@@ -877,7 +908,7 @@ void GameManager::replay(Board board)
 
     Position outFromPos, outToPos;
     Viewer viewer;
-    // Åª¨ú²¾°Ê¹Lªº¨C¤@¨B¡A²¾°Ê¨Ã¥B¦L¥X´Ñ½L
+    // è®€å–ç§»å‹•éçš„æ¯ä¸€æ­¥ï¼Œç§»å‹•ä¸¦ä¸”å°å‡ºæ£‹ç›¤
     while (file >> outFromPos.x >> outFromPos.y >> outToPos.x >> outToPos.y)
     {
         players[current_player]->OnMove(board, outFromPos, outToPos);
