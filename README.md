@@ -23,7 +23,7 @@ object oriented programming, class project
 ## 加分項目(50%)
 | 項目                           | 得分 |
 |:------------------------------ | ---- |
-| 加入動畫 (5%)                  | 0     |
+| 加入動畫 (5%)                  | 5     |
 | 提示可移動路徑 (3%)            | 0     |
 | 提示可吃的棋子 (3%)            | 0     |
 | 提示被將軍     (3%)            | 3     |
@@ -33,5 +33,5 @@ object oriented programming, class project
 | 先攻後攻交換  (3%)             |  3    |
 | AI繼承 player base class (10%) | 0     |
 | Save/Load state to file (5%)   | 5     |
-| Log Replay (5%)                |  0    |
+| Log Replay (5%)                |  5    |
 | NetWork (5%)                   |  0    |
